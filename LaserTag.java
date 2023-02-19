@@ -15,9 +15,10 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class LaserTag
+public class LaserTag implements ActionListener
 {
-    
+    private JTextField textField;
+
     public static void main(String[] args) throws InterruptedException
     {
         // Splash screen ---------------------------------------
@@ -33,7 +34,7 @@ public class LaserTag
         // Loading JFrame window
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setVisible(true);
-        frame.getContentPane().setBackground(Color.BLACK);
+        frame.getContentPane().setBackground(Color.PINK);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         // Vertical box to hold horizontal box
@@ -66,9 +67,9 @@ public class LaserTag
         // Output
         // Output redTeamPlayerNames to the terminal
         System.out.println("Red Team Player Names:");
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 20; i++) {              
             System.out.println(redTeamPlayerNames[i]);
-}
+        }
 
         frame.setVisible(true);
     }
@@ -107,8 +108,28 @@ public class LaserTag
         hbox.add(new JLabel(labelText));
         hbox.add(Box.createHorizontalStrut(10));
         JTextField textField = new JTextField(10);
+        // add action listener
+        LaserTag listener = new LaserTag(textField);
+        textField.addActionListener(listener);
         hbox.add(textField);
         vbox.add(hbox);
+        
         return textField; 
     }
+
+    public LaserTag(JTextField textField) 
+    {
+        this.textField = textField;
+    }
+
+    public void actionPerformed(ActionEvent e)
+	{
+        if (e.getSource() == textField) 
+        {
+            // Handle the event triggered by the Enter key being pressed
+            String text = textField.getText();
+            System.out.println(" * Enter key pressed! Text entered: " + text);
+        }
+	}
+
 }
