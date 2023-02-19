@@ -27,8 +27,12 @@ public class LaserTag implements ActionListener
     // private static int teamSize = 20;
     private static ArrayList<String> redPlayerNames = new ArrayList<String>();
     private static ArrayList<String> greenPlayerNames = new ArrayList<String>();
-    // private static String[] redTeamPlayerNames = new String[teamSize];
-    // private static String[] greenTeamPlayerNames = new String[teamSize];
+
+    // Laser Tag Constructor
+    public LaserTag(JTextField textField) 
+    {
+        this.textField = textField;
+    }
 
     public static void main(String[] args) throws InterruptedException
     {
@@ -42,13 +46,10 @@ public class LaserTag implements ActionListener
         splashScreen.setVisible(false);
 
         // Application starts here ------------------------------
-        // Loading JFrame window
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.getContentPane().setBackground(Color.PINK);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+        // Create frame
+        createFrame(frame);
 
-        // Vertical box to hold horizontal box
+        // Vertical boxes to hold horizontal box for name and id
         Box vbox1name = Box.createVerticalBox();
         Box vbox1id = Box.createVerticalBox();
         Box vbox2name = Box.createVerticalBox();
@@ -57,10 +58,10 @@ public class LaserTag implements ActionListener
         // Add boxes for each teams' 19 players
         for (int i = 0; i < 20; i++)
         {
-            addHorizontalBox(vbox1name, "Red: Player " + i);
-            addHorizontalBox(vbox1id, "ID: " + i);
-            addHorizontalBox(vbox2name, "Green: Player " + i);
-            addHorizontalBox(vbox2id, "ID: " + i);
+            addHorizontalBox(vbox1name, "Red Player " + i + ": ");
+            addHorizontalBox(vbox1id, "ID: ");
+            addHorizontalBox(vbox2name, "Green Player " + i + ": ");
+            addHorizontalBox(vbox2id, "ID: ");
         }
         
         // Horizontal box to hold the columns
@@ -79,13 +80,7 @@ public class LaserTag implements ActionListener
         // Add the boxes to the content pane
         contentPane.add(hbox);
 
-        // Output
-        // Output redTeamPlayerNames to the terminal
-        // System.out.println(" * Red Team Player Names:");
-        // for (int i = 0; i < 20; i++) {              
-            // System.out.println(redTeamPlayerNames[i]);
-        // }
-
+        //Show frame
         frame.setVisible(true);
     }
 
@@ -117,6 +112,16 @@ public class LaserTag implements ActionListener
         return splashScreen;
     }
 
+    // Method to create frame for application
+    public static void createFrame(JFrame frame) throws InterruptedException
+    {
+        // Loading JFrame window
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.getContentPane().setBackground(Color.PINK);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+
     // Method to create and add a horizontal box to a vertical box
     private static JTextField addHorizontalBox(Box vbox, String labelText)
     {
@@ -132,11 +137,6 @@ public class LaserTag implements ActionListener
         vbox.add(hbox);
         
         return textField; 
-    }
-
-    public LaserTag(JTextField textField) 
-    {
-        this.textField = textField;
     }
 
     public void actionPerformed(ActionEvent e)
