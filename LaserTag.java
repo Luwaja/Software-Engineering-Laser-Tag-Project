@@ -24,6 +24,58 @@ public class LaserTag
         // Create instance of JFrame
         JFrame frame = new JFrame("LASER TAG");
         
+        //Open splash screen for 3 seconds and close
+        createSplashScreen(frame).setVisible(true);
+        Thread.sleep(3000); //3 secs 
+        createSplashScreen(frame).setVisible(false);
+
+        // Application starts here ------------------------------
+        // Loading JFrame window
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setVisible(true);
+        frame.getContentPane().setBackground(Color.BLACK);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        // Vertical box to hold horizontal box
+        Box vbox1 = Box.createVerticalBox();
+        Box vbox2 = Box.createVerticalBox();
+        
+        String[] redTeamPlayerNames = new String[20];
+        String[] greenTeamPlayerNames = new String[20];
+        // Add boxes for each teams' 19 players
+        for (int i = 0; i < 20; i++)
+        {
+            redTeamPlayerNames[i] =  addHorizontalBox(vbox1, "Red: Player " + i).getText();
+            greenTeamPlayerNames[i] = addHorizontalBox(vbox2, "Green: Player " + i).getText();
+        }
+        
+        // Horizontal box to hold the columns
+        Box hbox = Box.createHorizontalBox();
+        hbox.add(vbox1);
+        hbox.add(Box.createHorizontalStrut(10));
+        hbox.add(vbox2);
+
+        // Set the layout manager of the content pane to a BoxLayout
+        Container contentPane = frame.getContentPane();
+        BoxLayout layout = new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS);
+        contentPane.setLayout(layout);
+
+        // Add the boxes to the content pane
+        contentPane.add(hbox);
+
+        // Output
+        // Output redTeamPlayerNames to the terminal
+        System.out.println("Red Team Player Names:");
+        for (int i = 0; i < 20; i++) {
+            System.out.println(redTeamPlayerNames[i]);
+}
+
+        frame.setVisible(true);
+    }
+
+    // Method to create splash screen
+    public static JWindow createSplashScreen(JFrame frame) throws InterruptedException
+    {
         // Creating image
         Image originalImage = Toolkit.getDefaultToolkit().getImage("PhotonLogo.jpg");
         
@@ -44,55 +96,19 @@ public class LaserTag
         int centerX = (screenSize.width - splashScreen.getWidth())/2;
         int centerY = (screenSize.height - splashScreen.getHeight())/2;
         splashScreen.setLocation(centerX,centerY);
-        
-        // Open screen, display for 3 seconds, close screen
-        splashScreen.setVisible(true);
-        Thread.sleep(3000); //3 secs 
-        splashScreen.setVisible(false);
-
-        // Application starts here ------------------------------
-        // Loading JFrame window
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setVisible(true);
-        frame.getContentPane().setBackground(Color.BLACK);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        // Vertical box to hold horizontal box
-        Box vbox1 = Box.createVerticalBox();
-        Box vbox2 = Box.createVerticalBox();
-        
-        // Add boxes for each teams' 19 players
-        for (int i = 0; i < 20; i++)
-        {
-            addHorizontalBox(vbox1, "Red: Player " + i);
-            addHorizontalBox(vbox2, "Green: Player " + i);
-        }
-        
-        // Horizontal box to hold the columns
-        Box hbox = Box.createHorizontalBox();
-        hbox.add(vbox1);
-        hbox.add(Box.createHorizontalStrut(10));
-        hbox.add(vbox2);
-
-        // Set the layout manager of the content pane to a BoxLayout
-        Container contentPane = frame.getContentPane();
-        BoxLayout layout = new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS);
-        contentPane.setLayout(layout);
-
-        // Add the boxes to the content pane
-        contentPane.add(hbox);
-
-        frame.setVisible(true);
+    
+        return splashScreen;
     }
 
     // Method to create and add a horizontal box to a vertical box
-    private static void addHorizontalBox(Box vbox, String labelText)
+    private static JTextField addHorizontalBox(Box vbox, String labelText)
     {
         Box hbox = Box.createHorizontalBox();
         hbox.add(new JLabel(labelText));
         hbox.add(Box.createHorizontalStrut(10));
-        hbox.add(new JTextField(10));
+        JTextField textField = new JTextField(10);
+        hbox.add(textField);
         vbox.add(hbox);
+        return textField; 
     }
-    
 }
