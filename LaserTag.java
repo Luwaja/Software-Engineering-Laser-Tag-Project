@@ -1,6 +1,7 @@
 // SWING imports
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.JTextField;
@@ -9,15 +10,25 @@ import javax.swing.BoxLayout;
 // AWT imports
 import java.awt.Image;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
 
-public class LaserTag implements ActionListener
+public class LaserTag implements ActionListener 
 {
     private JTextField textField;
+    // Team player names
+    // private static int teamSize = 20;
+    private static ArrayList<String> redPlayerNames = new ArrayList<String>();
+    private static ArrayList<String> greenPlayerNames = new ArrayList<String>();
+    // private static String[] redTeamPlayerNames = new String[teamSize];
+    // private static String[] greenTeamPlayerNames = new String[teamSize];
 
     public static void main(String[] args) throws InterruptedException
     {
@@ -26,35 +37,39 @@ public class LaserTag implements ActionListener
         JFrame frame = new JFrame("LASER TAG");
         
         //Open splash screen for 3 seconds and close
-        createSplashScreen(frame).setVisible(true);
+        JWindow splashScreen = createSplashScreen(frame);
         Thread.sleep(3000); //3 secs 
-        createSplashScreen(frame).setVisible(false);
+        splashScreen.setVisible(false);
 
         // Application starts here ------------------------------
         // Loading JFrame window
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setVisible(true);
         frame.getContentPane().setBackground(Color.PINK);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+        frame.setVisible(true);
+
         // Vertical box to hold horizontal box
-        Box vbox1 = Box.createVerticalBox();
-        Box vbox2 = Box.createVerticalBox();
-        
-        String[] redTeamPlayerNames = new String[20];
-        String[] greenTeamPlayerNames = new String[20];
+        Box vbox1name = Box.createVerticalBox();
+        Box vbox1id = Box.createVerticalBox();
+        Box vbox2name = Box.createVerticalBox();
+        Box vbox2id = Box.createVerticalBox();
+    
         // Add boxes for each teams' 19 players
         for (int i = 0; i < 20; i++)
         {
-            redTeamPlayerNames[i] =  addHorizontalBox(vbox1, "Red: Player " + i).getText();
-            greenTeamPlayerNames[i] = addHorizontalBox(vbox2, "Green: Player " + i).getText();
+            addHorizontalBox(vbox1name, "Red: Player " + i);
+            addHorizontalBox(vbox1id, "ID: " + i);
+            addHorizontalBox(vbox2name, "Green: Player " + i);
+            addHorizontalBox(vbox2id, "ID: " + i);
         }
         
         // Horizontal box to hold the columns
         Box hbox = Box.createHorizontalBox();
-        hbox.add(vbox1);
+        hbox.add(vbox1name);
+        hbox.add(vbox1id);
         hbox.add(Box.createHorizontalStrut(10));
-        hbox.add(vbox2);
+        hbox.add(vbox2name);
+        hbox.add(vbox2id);
 
         // Set the layout manager of the content pane to a BoxLayout
         Container contentPane = frame.getContentPane();
@@ -66,10 +81,10 @@ public class LaserTag implements ActionListener
 
         // Output
         // Output redTeamPlayerNames to the terminal
-        System.out.println("Red Team Player Names:");
-        for (int i = 0; i < 20; i++) {              
-            System.out.println(redTeamPlayerNames[i]);
-        }
+        // System.out.println(" * Red Team Player Names:");
+        // for (int i = 0; i < 20; i++) {              
+            // System.out.println(redTeamPlayerNames[i]);
+        // }
 
         frame.setVisible(true);
     }
@@ -97,6 +112,7 @@ public class LaserTag implements ActionListener
         int centerX = (screenSize.width - splashScreen.getWidth())/2;
         int centerY = (screenSize.height - splashScreen.getHeight())/2;
         splashScreen.setLocation(centerX,centerY);
+        splashScreen.setVisible(true);
     
         return splashScreen;
     }
@@ -104,11 +120,12 @@ public class LaserTag implements ActionListener
     // Method to create and add a horizontal box to a vertical box
     private static JTextField addHorizontalBox(Box vbox, String labelText)
     {
+        // Create boxes
         Box hbox = Box.createHorizontalBox();
-        hbox.add(new JLabel(labelText));
-        hbox.add(Box.createHorizontalStrut(10));
-        JTextField textField = new JTextField(10);
-        // add action listener
+        hbox.add(new JLabel(labelText));       // Add label
+        hbox.add(Box.createHorizontalStrut(10)); // Add space for label
+        JTextField textField = new JTextField(10); // Add text field
+        // Add action listener to each text field
         LaserTag listener = new LaserTag(textField);
         textField.addActionListener(listener);
         hbox.add(textField);
@@ -128,7 +145,22 @@ public class LaserTag implements ActionListener
         {
             // Handle the event triggered by the Enter key being pressed
             String text = textField.getText();
-            System.out.println(" * Enter key pressed! Text entered: " + text);
+            if (textField.getX() < 100)
+                redPlayerNames.add(text);
+            if (textField.getX() > 100)
+                greenPlayerNames.add(text);
+            // System.out.println("\n * textField.getX() for " + text + " = " + textField.getX());
+            System.out.println("\n * Enter key pressed!\n\n\t -> Text entered: " + text);
+        }
+        System.out.println(" * Red Team Player Names:");
+        for (int i = 0; i < redPlayerNames.size(); i++)
+        {
+            System.out.println( redPlayerNames.get(i) );
+        }
+        System.out.println(" * Green Team Player Names:");
+        for (int i = 0; i < greenPlayerNames.size(); i++)
+        {
+            System.out.println( greenPlayerNames.get(i) );
         }
 	}
 
