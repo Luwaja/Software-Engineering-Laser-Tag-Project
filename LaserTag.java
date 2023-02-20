@@ -201,7 +201,3 @@ public class LaserTag implements ActionListener
 	}
 
 }
-
-
-
-
