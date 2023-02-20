@@ -63,11 +63,11 @@ public class LaserTag implements ActionListener
         Box vbox2id = Box.createVerticalBox();
     
         // Add boxes for each teams' 19 players
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 15; i++)
         {
-            addHorizontalBox(vbox1name, "Red Player " + i + ": ");
+            addHorizontalBox(vbox1name, "Red Player " + (i+1) + ": ");
             addHorizontalBox(vbox1id, "ID: ");
-            addHorizontalBox(vbox2name, "Green Player " + i + ": ");
+            addHorizontalBox(vbox2name, "Green Player " + (i+1) + ": ");
             addHorizontalBox(vbox2id, "ID: ");
         }
         
