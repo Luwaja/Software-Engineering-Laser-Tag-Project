@@ -26,14 +26,11 @@ import java.util.ArrayList;
 
 public class LaserTag implements ActionListener 
 {
-    // Team player names
-    private static ArrayList<Player> redPlayer = new ArrayList<Player>();
-    private static ArrayList<Player> greenPlayer = new ArrayList<Player>();
-    private static ArrayList<String> redPlayerIDs = new ArrayList<String>();
-    private static ArrayList<String> greenPlayerIDs = new ArrayList<String>();
-    // Variables
+    // arraylist of green players and red players
+    private static ArrayList<Player> redPlayers = new ArrayList<Player>();
+    private static ArrayList<Player> greenPlayers = new ArrayList<Player>();
+    // variables
     private JTextField textField;
-
 
     // Laser Tag Constructor
     public LaserTag(JTextField textField) 
@@ -173,30 +170,17 @@ public class LaserTag implements ActionListener
     // Method to print out array lists of players names
     public void printTeams()
     {
-        // Print out red team names and IDs
         System.out.println("--------------------------------------\n");
-        System.out.println(" * Red Team Player Names: ");
-        for (int i = 0; i < redPlayer.size(); i++)
+        System.out.println(" * Red Team Player Names: \n");
+        for (int i = 0; i < redPlayers.size(); i++)
         {
-            System.out.println("\t * Player " + i + ": " + redPlayer.get(i) );
+            System.out.println("\t * Player " + (i + 1) + " " + redPlayers.get(i) );
         }
-        System.out.println(" * Red Team Player IDs: ");
-        for (int i = 0; i < redPlayerIDs.size(); i++)
+        System.out.println("--------------------------------------\n");
+        System.out.println(" * Green Team Player Names: \n");
+        for (int i = 0; i < greenPlayers.size(); i++)
         {
-            System.out.println("\t\t -> ID: " + redPlayerIDs.get(i));
-        }
-        
-        //Print out green team names and IDs
-        System.out.println("\n--------------------------------------\n");
-        System.out.println(" * Green Team Player Names: ");
-        for (int i = 0; i < greenPlayer.size(); i++)
-        {
-            System.out.println("\t -> Player " + i + ": " + greenPlayer.get(i) );
-        }
-        System.out.println(" * Green Team Player IDs: ");
-        for (int i = 0; i < greenPlayerIDs.size(); i++)
-        {
-            System.out.println("\t\t -> ID: " + greenPlayerIDs.get(i));
+            System.out.println("\t -> Player " + (i + 1) + " " + greenPlayers.get(i) );
         }
         System.out.println("\n");
     }
@@ -208,12 +192,16 @@ public class LaserTag implements ActionListener
             // Handle the event triggered by the Enter key being pressed
             String text = textField.getText();
             if ( textField.getX() == 94 || textField.getX() == 102 )
-                redPlayer.add(new Player(text, null));
+                redPlayers.add(new Player(text, null));
             else
-                greenPlayer.add(new Player(text, null));
-            System.out.println("\n * textField.getLocationOnScreen() for " + text + " = " + textField.getLocationOnScreen());
+                greenPlayers.add(new Player(text, null));
+            // System.out.println("\n * textField.getLocationOnScreen() for " + text + " = " + textField.getLocationOnScreen());
         }
         printTeams();
 	}
 
 }
+
+
+
+
