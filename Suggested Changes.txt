@@ -1,0 +1,151 @@
+// SWING imports
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JWindow;
+import javax.swing.JTextField;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+// AWT imports
+import java.awt.Image;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class LaserTagSuggestedChanges
+{
+    //STARTING NOTE: I just saw you guys updated files a hour or so ago, is probably out of date
+	//for some of the comments since I can see some of them 100% fixed
+	//However, there are a couple things in there still that this should help with!
+	//note I didn't impliment them in case people disagree, however, I added them in  comments
+	//so if we like the idea / change we can go for it!
+    public static void main(String[] args) throws InterruptedException
+    {
+        // Splash screen ---------------------------------------
+        // Create instance of JFrame
+        JFrame frame = new JFrame("LASER TAG");
+		// we might want to add in "frame.setSize(1920, 1080)" or any other size
+		// because we run into issues later without this (explained later).  On top of that 
+		// try out not having the program in full screen by clicking/draggin the top bar. 
+		// It essentially has a size  of nothing so we can lose the location of the program if 
+		// it is accidentally moved.
+        
+        // Creating image
+        Image originalImage = Toolkit.getDefaultToolkit().getImage("PhotonLogo.jpg");
+        
+        // Scale down image
+        Image scaledImage = originalImage.getScaledInstance(660,308,Image.SCALE_SMOOTH);
+        JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
+        frame.add(imageLabel);
+
+        // Creating window splashscreen
+        JWindow splashScreen = new JWindow();
+        splashScreen.add(imageLabel); // Upload image
+        splashScreen.pack();
+        splashScreen.setLocationRelativeTo(null);
+        
+        // Sizing and centering the screen
+        splashScreen.setSize(660,308); 
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int centerX = (screenSize.width - splashScreen.getWidth())/2;
+        int centerY = (screenSize.height - splashScreen.getHeight())/2;
+        splashScreen.setLocation(centerX,centerY);
+        
+        // Open screen, display for 3 seconds, close screen
+        splashScreen.setVisible(true);
+        Thread.sleep(300); //3 secs 
+		//we might want to take a second off this unless it was requested for 3 at some point
+		//mainly so its easier on us testing the program in the future, so maybe "2000"?
+		
+        splashScreen.setVisible(false);
+
+        // Application starts here ------------------------------
+        // Loading JFrame window
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setVisible(true);
+        frame.getContentPane().setBackground(Color.BLACK);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        // Vertical box to hold horizontal box
+        Box vbox1 = Box.createVerticalBox();
+        Box vbox2 = Box.createVerticalBox();
+        
+        // Add boxes for each teams' 19 players
+		// (small adjustment here and its just we should say 20 for the note since it 
+		//starts counting at 0, so last player is number 19 but there are 20 players 
+		// hbox.add(new JTextField(10));
+        for (int i = 0; i < 20; i++)
+        {
+            addHorizontalBox(vbox1, "Red: Player " + i);
+            addHorizontalBox(vbox2, "Green: Player " + i);
+        }
+        //So we have one issue here which is the way we're showing the boxes due to numbers.
+		//when numbers increase past 9 it becomes two characters instead of one,
+		//We can fix this in a very quick way, although not pretty by doing this
+		//in our current for loop, just to call 0-9 with  an additional space after our diget to push it to be alinged
+		// for (int i = 0; i < 20; i++)
+        // {
+			// if (i < 10)
+            	// addHorizontalBox(vbox1, "Red: Player " + i + "  ");
+            	// addHorizontalBox(vbox2, "Green: Player " + i + "  ");
+			// else
+				// addHorizontalBox(vbox1, "Red: Player " + i);
+            	// addHorizontalBox(vbox2, "Green: Player " + i);
+        // }
+		//This cleans it up a lot and quickly.  An alternative option is if we add in grid layout so the area our boxes are
+		//in becomes rigid
+		
+        // Horizontal box to hold the columns
+        Box hbox = Box.createHorizontalBox();
+        hbox.add(vbox1);
+        hbox.add(Box.createHorizontalStrut(10));
+		//This is where the issue by not defining a frame size comes into play
+		// since we do not knwo what resolution we're dealing with, we could be visually
+		// squishing other parts of the program when we set the structure since monitors have
+		// different resolutions
+		
+        hbox.add(vbox2);
+
+        // Set the layout manager of the content pane to a BoxLayout
+        Container contentPane = frame.getContentPane();
+		//we call frame.getContentPane() earlier as well, we might want to move the variable definition up 
+		//to the top so that color call can  also use the variable contentPane
+		
+        BoxLayout layout = new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS);
+		//we can just use content pane for the boxlayout call since we defined it already so:
+		//BoxLayout layout = new BoxLayout(contentPane, BoxLayout.Y_AXIS);
+		
+        contentPane.setLayout(layout);
+		//ok so this one is a little more confusing to explain however these two lines of code: 
+		// BoxLayout layout = new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS);
+		// contentPane.setLayout(layout);
+		// arn't actually doing anything for us.  Reason being is setting to boxlayout on the Y axis can be helpful
+		// if we have multiple boxes, and although it seems that way we actually have one box with our code. We forced the formatting of 
+		//the boxes by nesting them heavily (horizontal boxes in vertical boxes which are in a horizontal box) the inner boxes are being
+		//formatted because of how create horizontalbox and create vertical box  work (which is just filling in their available space)
+		//and that outer final box which holds everything is already just filling in its avilable space (the screen) so nothing is in 
+		//need of formatting unless we want to un-nest some of our boxes.
+
+        // Add the boxes to the content pane
+        contentPane.add(hbox);
+
+        frame.setVisible(true);
+    }
+
+    // Method to create and a`dd a horizontal box to a vertical box
+    private static void addHorizontalBox(Box vbox, String labelText)
+    {
+        Box hbox = Box.createHorizontalBox();
+        hbox.add(new JLabel(labelText));
+        hbox.add(Box.createHorizontalStrut(10));
+        hbox.add(new JTextField(10));
+		//This one I might be wrong on because I'm a little lost on it, but I figured I would point it out just in case
+		//So I am unsure if horizontal boxes store data past just graphically.  Since we are establishing a new textfield every 
+		//is this actually getting stored in a horizontal box like an array of some type or do we need to create something to be storing this?
+        vbox.add(hbox);
+    }
+    
+}
