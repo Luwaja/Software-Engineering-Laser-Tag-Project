@@ -5,10 +5,12 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.JTextField;
+import javax.swing.JButton;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 // AWT imports
 import java.awt.Image;
+import java.awt.Font;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Dimension;
@@ -17,17 +19,21 @@ import java.awt.Toolkit;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 
 public class LaserTag implements ActionListener 
 {
-    private JTextField textField;
     // Team player names
     private static ArrayList<Player> redPlayer = new ArrayList<Player>();
     private static ArrayList<Player> greenPlayer = new ArrayList<Player>();
     private static ArrayList<String> redPlayerIDs = new ArrayList<String>();
     private static ArrayList<String> greenPlayerIDs = new ArrayList<String>();
+    // Variables
+    private JTextField textField;
+
 
     // Laser Tag Constructor
     public LaserTag(JTextField textField) 
@@ -78,8 +84,25 @@ public class LaserTag implements ActionListener
         BoxLayout layout = new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS);
         contentPane.setLayout(layout);
 
+        // Create start game button
+        JButton button = new JButton("[F5] Start Game");
+        button.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                buttonMethod();
+            }
+        });
+        button.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                System.out.println("1");
+                if (e.getKeyCode() == KeyEvent.VK_F5) {
+                    buttonMethod();
+                }
+            }
+        });
+
         // Add the boxes to the content pane
         contentPane.add(hbox);
+        contentPane.add(button);
 
         //Show frame
         frame.setVisible(true);
@@ -134,14 +157,23 @@ public class LaserTag implements ActionListener
         // Add action listener to each text field
         LaserTag listener = new LaserTag(textField);
         textField.addActionListener(listener);
+        // Add textfield to hbox and hbox to vbox
         hbox.add(textField);
         vbox.add(hbox);
         
         return textField; 
     }
 
+    // Method for when button is pressed
+    public static void buttonMethod()
+    {
+        System.out.println("BUTTON METHOD");
+    }
+
+    // Method to print out array lists of players names
     public void printTeams()
     {
+        // Print out red team names and IDs
         System.out.println("--------------------------------------\n");
         System.out.println(" * Red Team Player Names: ");
         for (int i = 0; i < redPlayer.size(); i++)
@@ -153,6 +185,8 @@ public class LaserTag implements ActionListener
         {
             System.out.println("\t\t -> ID: " + redPlayerIDs.get(i));
         }
+        
+        //Print out green team names and IDs
         System.out.println("\n--------------------------------------\n");
         System.out.println(" * Green Team Player Names: ");
         for (int i = 0; i < greenPlayer.size(); i++)
@@ -178,7 +212,6 @@ public class LaserTag implements ActionListener
             else
                 greenPlayer.add(new Player(text, null));
             System.out.println("\n * textField.getLocationOnScreen() for " + text + " = " + textField.getLocationOnScreen());
-            // System.out.println("\n * Enter key pressed!\n\n\t -> Text entered: " + text);
         }
         printTeams();
 	}
