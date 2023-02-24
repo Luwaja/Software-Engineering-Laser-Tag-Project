@@ -26,11 +26,14 @@ import java.util.ArrayList;
 
 public class LaserTag implements ActionListener 
 {
-    // arraylist of green players and red players
-    private static ArrayList<Player> redPlayers = new ArrayList<Player>();
-    private static ArrayList<Player> greenPlayers = new ArrayList<Player>();
-    // variables
+    // Team player names
+    private static ArrayList<Player> redPlayer = new ArrayList<Player>();
+    private static ArrayList<Player> greenPlayer = new ArrayList<Player>();
+    private static ArrayList<String> redPlayerIDs = new ArrayList<String>();
+    private static ArrayList<String> greenPlayerIDs = new ArrayList<String>();
+    // Variables
     private JTextField textField;
+
 
     // Laser Tag Constructor
     public LaserTag(JTextField textField) 
@@ -38,9 +41,9 @@ public class LaserTag implements ActionListener
         this.textField = textField;
     }
 
+    //MAIN FUNCTION ============================================================================
     public static void main(String[] args) throws InterruptedException
     {
-        // Splash screen ---------------------------------------
         // Create instance of JFrame
         JFrame frame = new JFrame("LASER TAG");
         
@@ -49,7 +52,6 @@ public class LaserTag implements ActionListener
         Thread.sleep(3000); //3 secs 
         splashScreen.setVisible(false);
 
-        // Application starts here ------------------------------
         // Create frame
         createFrame(frame);
 
@@ -78,7 +80,7 @@ public class LaserTag implements ActionListener
 
         // Set the layout manager of the content pane to a BoxLayout
         Container contentPane = frame.getContentPane();
-        BoxLayout layout = new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS);
+        BoxLayout layout = new BoxLayout(contentPane, BoxLayout.Y_AXIS);
         contentPane.setLayout(layout);
 
         // Create start game button
@@ -105,6 +107,8 @@ public class LaserTag implements ActionListener
         frame.setVisible(true);
     }
 
+
+    // METHODS ==================================================================================================
     // Method to create splash screen
     public static JWindow createSplashScreen(JFrame frame) throws InterruptedException
     {
@@ -133,6 +137,7 @@ public class LaserTag implements ActionListener
         return splashScreen;
     }
 
+
     // Method to create frame for application
     public static void createFrame(JFrame frame) throws InterruptedException
     {
@@ -142,6 +147,7 @@ public class LaserTag implements ActionListener
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
+
 
     // Method to create and add a horizontal box to a vertical box
     private static JTextField addHorizontalBox(Box vbox, String labelText)
@@ -161,30 +167,47 @@ public class LaserTag implements ActionListener
         return textField; 
     }
 
+
     // Method for when button is pressed
     public static void buttonMethod()
     {
         System.out.println("BUTTON METHOD");
     }
 
+
     // Method to print out array lists of players names
     public void printTeams()
     {
+        // Print out red team names and IDs
         System.out.println("--------------------------------------\n");
-        System.out.println(" * Red Team Player Names: \n");
-        for (int i = 0; i < redPlayers.size(); i++)
+        System.out.println(" * Red Team Player Names: ");
+        for (int i = 0; i < redPlayer.size(); i++)
         {
-            System.out.println("\t * Player " + (i + 1) + " " + redPlayers.get(i) );
+            System.out.println("\t * Player " + i + ": " + redPlayer.get(i) );
         }
-        System.out.println("--------------------------------------\n");
-        System.out.println(" * Green Team Player Names: \n");
-        for (int i = 0; i < greenPlayers.size(); i++)
+        System.out.println(" * Red Team Player IDs: ");
+        for (int i = 0; i < redPlayerIDs.size(); i++)
         {
-            System.out.println("\t -> Player " + (i + 1) + " " + greenPlayers.get(i) );
+            System.out.println("\t\t -> ID: " + redPlayerIDs.get(i));
+        }
+        
+        //Print out green team names and IDs
+        System.out.println("\n--------------------------------------\n");
+        System.out.println(" * Green Team Player Names: ");
+        for (int i = 0; i < greenPlayer.size(); i++)
+        {
+            System.out.println("\t -> Player " + i + ": " + greenPlayer.get(i) );
+        }
+        System.out.println(" * Green Team Player IDs: ");
+        for (int i = 0; i < greenPlayerIDs.size(); i++)
+        {
+            System.out.println("\t\t -> ID: " + greenPlayerIDs.get(i));
         }
         System.out.println("\n");
     }
 
+
+    // ACTION PERFORMED =========================================================================================================
     public void actionPerformed(ActionEvent e)
 	{
         if (e.getSource() == textField) 
@@ -192,10 +215,10 @@ public class LaserTag implements ActionListener
             // Handle the event triggered by the Enter key being pressed
             String text = textField.getText();
             if ( textField.getX() == 94 || textField.getX() == 102 )
-                redPlayers.add(new Player(text, null));
+                redPlayer.add(new Player(text, null));
             else
-                greenPlayers.add(new Player(text, null));
-            // System.out.println("\n * textField.getLocationOnScreen() for " + text + " = " + textField.getLocationOnScreen());
+                greenPlayer.add(new Player(text, null));
+            System.out.println("\n * textField.getLocationOnScreen() for " + text + " = " + textField.getLocationOnScreen());
         }
         printTeams();
 	}
