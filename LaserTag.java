@@ -1,7 +1,6 @@
 // SWING imports
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.JTextField;
@@ -12,7 +11,6 @@ import javax.swing.BoxLayout;
 import java.awt.Image;
 import java.awt.Font;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -22,55 +20,67 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.time.temporal.TemporalAccessor;
+import java.awt.Component;
 import java.util.ArrayList;
 
 public class LaserTag implements ActionListener 
 {
-    // Team player names
-    private static ArrayList<Player> redPlayer = new ArrayList<Player>();
-    private static ArrayList<Player> greenPlayer = new ArrayList<Player>();
-    private static ArrayList<String> redPlayerIDs = new ArrayList<String>();
-    private static ArrayList<String> greenPlayerIDs = new ArrayList<String>();
-    // Variables
+    // arraylist of green players and red players
+    private static ArrayList<Player> redPlayers = new ArrayList<Player>();
+    private static ArrayList<Player> greenPlayers = new ArrayList<Player>();
+    // variables
     private JTextField textField;
 
-
-    // Laser Tag Constructor
-    public LaserTag(JTextField textField) 
+    // laser Tag Constructor
+    public LaserTag(JTextField textField, ArrayList<Player> redTeam, ArrayList<Player> greenTeam) 
     {
         this.textField = textField;
+        this.redPlayers = redTeam;
+        this.greenPlayers = greenTeam;
     }
 
-    //MAIN FUNCTION ============================================================================
     public static void main(String[] args) throws InterruptedException
     {
-        // Create instance of JFrame
-        JFrame frame = new JFrame("LASER TAG");
+        // splash screen ---------------------------------------
+        // create instance of JFrame
+        JFrame frame = new JFrame(" * LASER TAG * ");
         
-        //Open splash screen for 3 seconds and close
+        // open splash screen for 3 seconds and close
         JWindow splashScreen = createSplashScreen(frame);
-        Thread.sleep(3000); //3 secs 
+        Thread.sleep(3000);     // 3 secs 
         splashScreen.setVisible(false);
 
-        // Create frame
+        // application starts here ------------------------------
+        // create frame
         createFrame(frame);
 
-        // Vertical boxes to hold horizontal box for name and id
+        // vertical boxes to hold horizontal box for name and id
         Box vbox1name = Box.createVerticalBox();
         Box vbox1id = Box.createVerticalBox();
         Box vbox2name = Box.createVerticalBox();
         Box vbox2id = Box.createVerticalBox();
     
-        // Add boxes for each teams' 19 players
+        // add boxes for each teams' 15 players
         for (int i = 0; i < 15; i++)
         {
-            addHorizontalBox(vbox1name, "Red Player " + (i+1) + ": ");
-            addHorizontalBox(vbox1id, "ID: ");
-            addHorizontalBox(vbox2name, "Green Player " + (i+1) + ": ");
-            addHorizontalBox(vbox2id, "ID: ");
+            // organizes horizontal bozes so that they line up 
+            if (i <= 8)
+            {
+                addHorizontalBox(vbox1name, " - Red Player " + (i + 1) + ":  ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox1id, " - ID: ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox2name, "- Green Player " + (i + 1) + ":  ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox2id, " - ID: ", redPlayers, greenPlayers);
+            }
+            else 
+            {
+                addHorizontalBox(vbox1name, " - Red Player " + (i + 1) + ":", redPlayers, greenPlayers);
+                addHorizontalBox(vbox1id, " - ID: ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox2name, "- Green Player " + (i + 1) + ":", redPlayers, greenPlayers);
+                addHorizontalBox(vbox2id, " - ID: ", redPlayers, greenPlayers);
+            }
         }
         
-        // Horizontal box to hold the columns
+        // horizontal box to hold the columns
         Box hbox = Box.createHorizontalBox();
         hbox.add(vbox1name);
         hbox.add(vbox1id);
@@ -78,149 +88,148 @@ public class LaserTag implements ActionListener
         hbox.add(vbox2name);
         hbox.add(vbox2id);
 
-        // Set the layout manager of the content pane to a BoxLayout
+        // set the layout manager of the content pane to a BoxLayout
         Container contentPane = frame.getContentPane();
-        BoxLayout layout = new BoxLayout(contentPane, BoxLayout.Y_AXIS);
+        BoxLayout layout = new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS);
         contentPane.setLayout(layout);
 
-        // Create start game button
+        // create start game button
         JButton button = new JButton("[F5] Start Game");
         button.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                buttonMethod();
+                startButtonMethod();
             }
         });
         button.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 System.out.println("1");
                 if (e.getKeyCode() == KeyEvent.VK_F5) {
-                    buttonMethod();
+                    startButtonMethod();
                 }
             }
         });
 
-        // Add the boxes to the content pane
+        // add the boxes to the content pane
         contentPane.add(hbox);
         contentPane.add(button);
 
-        //Show frame
+        // show frame
         frame.setVisible(true);
+
+        // display play action screen
     }
 
-
-    // METHODS ==================================================================================================
-    // Method to create splash screen
+    // method to create splash screen
     public static JWindow createSplashScreen(JFrame frame) throws InterruptedException
     {
-        // Creating image
+        // creating image
         Image originalImage = Toolkit.getDefaultToolkit().getImage("PhotonLogo.jpg");
         
-        // Scale down image
+        // scale down image
         Image scaledImage = originalImage.getScaledInstance(660,308,Image.SCALE_SMOOTH);
         JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
         frame.add(imageLabel);
 
-        // Creating window splashscreen
+        // creating window splashscreen
         JWindow splashScreen = new JWindow();
-        splashScreen.add(imageLabel); // Upload image
+        splashScreen.add(imageLabel);   // upload image
         splashScreen.pack();
         splashScreen.setLocationRelativeTo(null);
         
-        // Sizing and centering the screen
+        // sizing and centering the screen
         splashScreen.setSize(660,308); 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int centerX = (screenSize.width - splashScreen.getWidth())/2;
         int centerY = (screenSize.height - splashScreen.getHeight())/2;
-        splashScreen.setLocation(centerX,centerY);
+        splashScreen.setLocation(centerX, centerY);
         splashScreen.setVisible(true);
     
         return splashScreen;
     }
 
-
-    // Method to create frame for application
+    // method to create frame for application
     public static void createFrame(JFrame frame) throws InterruptedException
     {
-        // Loading JFrame window
+        // loading JFrame window
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.getContentPane().setBackground(Color.PINK);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
 
-
-    // Method to create and add a horizontal box to a vertical box
-    private static JTextField addHorizontalBox(Box vbox, String labelText)
+    // method to create and add a horizontal box to a vertical box
+    public static JTextField addHorizontalBox(Box vbox, String labelText, ArrayList<Player> redPlayers, ArrayList<Player> greenPlayers)
     {
-        // Create boxes
+        // create boxes
         Box hbox = Box.createHorizontalBox();
-        hbox.add(new JLabel(labelText));       // Add label
-        hbox.add(Box.createHorizontalStrut(10)); // Add space for label
-        JTextField textField = new JTextField(10); // Add text field
-        // Add action listener to each text field
-        LaserTag listener = new LaserTag(textField);
+        hbox.add(new JLabel(labelText));                    // add label
+        hbox.add(Box.createHorizontalStrut(10));      // add space for label
+        JTextField textField = new JTextField(10);  // add text field
+        // add action listener to each text field
+        LaserTag listener = new LaserTag(textField, redPlayers, greenPlayers);
         textField.addActionListener(listener);
-        // Add textfield to hbox and hbox to vbox
-        hbox.add(textField);
+        // add textfield to hbox and hbox to vbox
+        hbox.add(textField); // add text field to box
+        // create player object and add it to the appropriate arraylist
+        if (labelText.contains("Red"))
+        {
+            Player player = new Player(textField, null, labelText.substring(12), "red");
+            redPlayers.add(player);
+        }
+        else if (labelText.contains("Green"))
+        {
+            Player player = new Player(textField, null, labelText.substring(14), "green");
+            greenPlayers.add(player);
+        }
+
+        // add horizontal box to vertical box
         vbox.add(hbox);
-        
-        return textField; 
+
+        return textField;
     }
 
-
-    // Method for when button is pressed
-    public static void buttonMethod()
+    // method for when button is pressed
+    public static void startButtonMethod()
     {
-        System.out.println("BUTTON METHOD");
+        System.out.println(" * BUTTON METHOD * ");
     }
 
-
-    // Method to print out array lists of players names
+    // method to print out array lists of players names
     public void printTeams()
     {
-        // Print out red team names and IDs
         System.out.println("--------------------------------------\n");
-        System.out.println(" * Red Team Player Names: ");
-        for (int i = 0; i < redPlayer.size(); i++)
+        System.out.println(" * Red Team Player Names: \n");
+        for (int i = 0; i < redPlayers.size(); i++)
         {
-            System.out.println("\t * Player " + i + ": " + redPlayer.get(i) );
+            System.out.println("\t * Player " + (i + 1) + " " + redPlayers.get(i) );
         }
-        System.out.println(" * Red Team Player IDs: ");
-        for (int i = 0; i < redPlayerIDs.size(); i++)
+        System.out.println("--------------------------------------\n");
+        System.out.println(" * Green Team Player Names: \n");
+        for (int i = 0; i < greenPlayers.size(); i++)
         {
-            System.out.println("\t\t -> ID: " + redPlayerIDs.get(i));
-        }
-        
-        //Print out green team names and IDs
-        System.out.println("\n--------------------------------------\n");
-        System.out.println(" * Green Team Player Names: ");
-        for (int i = 0; i < greenPlayer.size(); i++)
-        {
-            System.out.println("\t -> Player " + i + ": " + greenPlayer.get(i) );
-        }
-        System.out.println(" * Green Team Player IDs: ");
-        for (int i = 0; i < greenPlayerIDs.size(); i++)
-        {
-            System.out.println("\t\t -> ID: " + greenPlayerIDs.get(i));
+            System.out.println("\t -> Player " + (i + 1) + " " + greenPlayers.get(i) );
         }
         System.out.println("\n");
     }
 
-
-    // ACTION PERFORMED =========================================================================================================
+    // action performed method
     public void actionPerformed(ActionEvent e)
 	{
         if (e.getSource() == textField) 
         {
-            // Handle the event triggered by the Enter key being pressed
+            // handle the event triggered by the Enter key being pressed
             String text = textField.getText();
-            if ( textField.getX() == 94 || textField.getX() == 102 )
-                redPlayer.add(new Player(text, null));
-            else
-                greenPlayer.add(new Player(text, null));
-            System.out.println("\n * textField.getLocationOnScreen() for " + text + " = " + textField.getLocationOnScreen());
+            if (textField.getX() == 114 )
+                redPlayers.add(new Player(textField, text, null, "red"));
+            else if ( textField.getX() == 123 )
+                greenPlayers.add(new Player(textField, text, null, "green"));
+            // System.out.println("\n * textField.getX() for " + text + " = " + textField.getX());
         }
         printTeams();
 	}
 
 }
+
+
+
+
