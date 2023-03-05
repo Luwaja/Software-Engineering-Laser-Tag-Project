@@ -1,18 +1,16 @@
 // SWING imports
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 // AWT imports
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Font;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -31,19 +29,26 @@ import java.sql.SQLException;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 
-public class LaserTag extends JFrame
+public class LaserTag implements ActionListener 
 {
-    Controller controller;
-    
+    // Team player names
+    private static ArrayList<Player> redPlayer = new ArrayList<Player>();
+    private static ArrayList<Player> greenPlayer = new ArrayList<Player>();
+    private static ArrayList<String> redPlayerIDs = new ArrayList<String>();
+    private static ArrayList<String> greenPlayerIDs = new ArrayList<String>();
+    // Variables
+    private JTextField textField;
+
+
     // Laser Tag Constructor
-    public LaserTag() 
+    public LaserTag(JTextField textField) 
     {
-        
+        this.textField = textField;
     }
 
     //MAIN FUNCTION ============================================================================
     public static void main(String[] args) throws InterruptedException
-    {
+    {  
         // Create instance of JFrame
         JFrame frame = new JFrame("LASER TAG");
         
@@ -64,10 +69,21 @@ public class LaserTag extends JFrame
         // Add boxes for each teams' 15 players
         for (int i = 0; i < 15; i++)
         {
-            addHorizontalBox(vbox1name, "Red Player " + (i+1) + ": ");
-            addHorizontalBox(vbox1id, "ID: ");
-            addHorizontalBox(vbox2name, "Green Player " + (i+1) + ": ");
-            addHorizontalBox(vbox2id, "ID: ");
+            if (i <= 8)
+            {
+                addHorizontalBox(vbox1name, "(Red Player " + (i+1) + ")  ID:  ");
+                addHorizontalBox(vbox1id, "  Codename: ");
+                addHorizontalBox(vbox2name, "(Green Player " + (i+1) + ")  ID:  ");
+                addHorizontalBox(vbox2id, "  Codename: ");
+            }
+            else
+            {
+                addHorizontalBox(vbox1name, "(Red Player " + (i+1) + ") ID: ");
+                addHorizontalBox(vbox1id, "  Codename: ");
+                addHorizontalBox(vbox2name, "(Green Player " + (i+1) + ") ID: ");
+                addHorizontalBox(vbox2id, "  Codename: ");
+            }
+            
         }
         
         // Horizontal box to hold the columns
@@ -78,17 +94,14 @@ public class LaserTag extends JFrame
         hbox.add(vbox2name);
         hbox.add(vbox2id);
 
-        // Set the layout manager of the content pane to a BoxLayout
+        // Set the layout manager of the content pane to a GridBagLayout
         Container contentPane = frame.getContentPane();
         GridBagLayout layout = new GridBagLayout();
         contentPane.setLayout(layout);
 
-        // Set GridBagLayout constraints
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridx = GridBagConstraints.RELATIVE;
-        constraints.gridy = GridBagConstraints.RELATIVE;
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        layout.setConstraints(hbox, constraints);
+        // Creating Constraints
+        GridBagConstraints playerEntryConstraints = createConstraints(0, 0, 1, 1, 0.0, 100, 100, 100, 100);
+        GridBagConstraints startButtonConstraints = createConstraints(0, 1, 1, 1, 1.0, 10, 10, 10, 10);
 
         // Create start game button
         JButton button = new JButton("[F5] Start Game");
@@ -107,12 +120,13 @@ public class LaserTag extends JFrame
         });
 
         // Add the boxes to the content pane
-        contentPane.add(hbox);
-        contentPane.add(button);
+        contentPane.add(hbox, playerEntryConstraints);
+        contentPane.add(button, startButtonConstraints);
 
         //Show frame
         frame.setVisible(true);
     }
+
 
     // METHODS ==================================================================================================
     // Method to create splash screen
@@ -143,6 +157,7 @@ public class LaserTag extends JFrame
         return splashScreen;
     }
 
+
     // Method to create frame for application
     public static void createFrame(JFrame frame) throws InterruptedException
     {
@@ -155,7 +170,7 @@ public class LaserTag extends JFrame
     }
 
     // Method to create and add a horizontal box to a vertical box
-    private static JTextField addHorizontalBox(Box vbox, String labelText)
+    private static void addHorizontalBox(Box vbox, String labelText)
     {
         // Create boxes
         Box hbox = Box.createHorizontalBox();
@@ -164,11 +179,30 @@ public class LaserTag extends JFrame
         hbox.add(label); // Add label
         hbox.add(Box.createHorizontalStrut(10)); // Add space for label
         JTextField textField = new JTextField(10); // Add text field
+        // // Add action listener to each text field
+        // LaserTag listener = new LaserTag(textField);
+        // textField.addActionListener(listener);
+        
         // Add textfield to hbox and hbox to vbox
         hbox.add(textField);
         vbox.add(hbox);
-        
-        return textField; 
+    }
+
+    // Method to create GridBagConstraints 
+    private static GridBagConstraints createConstraints(int gridx, int gridy, int gridwidth, int gridHeight, double weightx, int insetsTop, int insetsLeft, int insetsRight, int insetsBottom)
+    {
+        // Create new constraint
+        GridBagConstraints methodConstraints = new GridBagConstraints();
+        // Set constraints with passed in values
+        methodConstraints.gridx = gridx;
+        methodConstraints.gridy = gridy;
+        methodConstraints.gridwidth = gridwidth;
+        methodConstraints.gridheight = gridHeight; 
+        methodConstraints.weightx = weightx;
+        methodConstraints.insets = new Insets(insetsTop, insetsLeft, insetsRight, insetsBottom);
+        methodConstraints.fill = GridBagConstraints.NONE;
+        // Return method constraint
+        return methodConstraints;
     }
 
     // Method for when button is pressed
@@ -176,4 +210,54 @@ public class LaserTag extends JFrame
     {
         System.out.println("BUTTON METHOD");
     }
+
+
+    // Method to print out array lists of players names
+    public void printTeams()
+    {
+        // Print out red team names and IDs
+        System.out.println("--------------------------------------\n");
+        System.out.println(" * Red Team Player Names: ");
+        for (int i = 0; i < redPlayer.size(); i++)
+        {
+            System.out.println("\t * Player " + i + ": " + redPlayer.get(i) );
+        }
+        System.out.println(" * Red Team Player IDs: ");
+        for (int i = 0; i < redPlayerIDs.size(); i++)
+        {
+            System.out.println("\t\t -> ID: " + redPlayerIDs.get(i));
+        }
+        
+        //Print out green team names and IDs
+        System.out.println("\n--------------------------------------\n");
+        System.out.println(" * Green Team Player Names: ");
+        for (int i = 0; i < greenPlayer.size(); i++)
+        {
+            System.out.println("\t -> Player " + i + ": " + greenPlayer.get(i) );
+        }
+        System.out.println(" * Green Team Player IDs: ");
+        for (int i = 0; i < greenPlayerIDs.size(); i++)
+        {
+            System.out.println("\t\t -> ID: " + greenPlayerIDs.get(i));
+        }
+        System.out.println("\n");
+    }
+
+
+    // ACTION PERFORMED =========================================================================================================
+    public void actionPerformed(ActionEvent e)
+	{
+        if (e.getSource() == textField) 
+        {
+            // Handle the event triggered by the Enter key being pressed
+            String text = textField.getText();
+            if ( textField.getX() == 94 || textField.getX() == 102 )
+                redPlayer.add(new Player(text, null));
+            else
+                greenPlayer.add(new Player(text, null));
+            System.out.println("\n * textField.getLocationOnScreen() for " + text + " = " + textField.getLocationOnScreen());
+        }
+        printTeams();
+	}
+
 }
