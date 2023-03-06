@@ -31,19 +31,21 @@ import java.util.ArrayList;
 
 public class LaserTag implements ActionListener 
 {
+    //Controller controller;
+
     // Team player names
-    private static ArrayList<Player> redPlayer = new ArrayList<Player>();
-    private static ArrayList<Player> greenPlayer = new ArrayList<Player>();
-    private static ArrayList<String> redPlayerIDs = new ArrayList<String>();
-    private static ArrayList<String> greenPlayerIDs = new ArrayList<String>();
+    private static ArrayList<Player> redPlayers = new ArrayList<Player>();
+    private static ArrayList<Player> greenPlayers = new ArrayList<Player>();
+
     // Variables
     private JTextField textField;
 
-
     // Laser Tag Constructor
-    public LaserTag(JTextField textField) 
+    public LaserTag(JTextField textField, ArrayList<Player> redTeam, ArrayList<Player> greenTeam) 
     {
         this.textField = textField;
+        this.redPlayers = redTeam;
+        this.greenPlayers = greenTeam;
     }
 
     //MAIN FUNCTION ============================================================================
@@ -71,17 +73,17 @@ public class LaserTag implements ActionListener
         {
             if (i <= 8)
             {
-                addHorizontalBox(vbox1name, "(Red Player " + (i+1) + ")  ID:  ");
-                addHorizontalBox(vbox1id, "  Codename: ");
-                addHorizontalBox(vbox2name, "(Green Player " + (i+1) + ")  ID:  ");
-                addHorizontalBox(vbox2id, "  Codename: ");
+                addHorizontalBox(vbox1name, "(Red Player " + (i+1) + ")   ID: ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox1id, "  Codename: ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox2name, "(Green Player " + (i+1) + ")   ID: ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox2id, "  Codename: ", redPlayers, greenPlayers);
             }
             else
             {
-                addHorizontalBox(vbox1name, "(Red Player " + (i+1) + ") ID: ");
-                addHorizontalBox(vbox1id, "  Codename: ");
-                addHorizontalBox(vbox2name, "(Green Player " + (i+1) + ") ID: ");
-                addHorizontalBox(vbox2id, "  Codename: ");
+                addHorizontalBox(vbox1name, "(Red Player " + (i+1) + ") ID: ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox1id, "  Codename: ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox2name, "(Green Player " + (i+1) + ") ID: ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox2id, "  Codename: ", redPlayers, greenPlayers);
             }
             
         }
@@ -170,22 +172,35 @@ public class LaserTag implements ActionListener
     }
 
     // Method to create and add a horizontal box to a vertical box
-    private static void addHorizontalBox(Box vbox, String labelText)
+    private static JTextField addHorizontalBox(Box vbox, String labelText, ArrayList<Player> redPlayers, ArrayList<Player> greenPlayers)
     {
         // Create boxes
         Box hbox = Box.createHorizontalBox();
         JLabel label = new JLabel(labelText);
-        label.setForeground(Color.white);
-        hbox.add(label); // Add label
-        hbox.add(Box.createHorizontalStrut(10)); // Add space for label
+        label.setForeground(Color.white);    
+        hbox.add(label);                                    // Add label
+        hbox.add(Box.createHorizontalStrut(10));     // Add space for label
         JTextField textField = new JTextField(10); // Add text field
-        // // Add action listener to each text field
-        // LaserTag listener = new LaserTag(textField);
-        // textField.addActionListener(listener);
+        // Add action listener to each text field
+        LaserTag listener = new LaserTag(textField, redPlayers, greenPlayers); // Allows enter to be used to add players 
+        textField.addActionListener(listener);                                 // from text fields into respective arrays
+        hbox.add(textField); // Add textfield to hbox
         
-        // Add textfield to hbox and hbox to vbox
-        hbox.add(textField);
-        vbox.add(hbox);
+        // Create player object and add it to the respective arrays
+        if (labelText.contains("Red"))
+        {
+            Player player = new Player(textField, null, labelText.substring(12), "Red");
+            redPlayers.add(player);
+        }
+        else if (labelText.contains("Green"))
+        {
+            Player player = new Player(textField, null, labelText.substring(14), "Green");
+            greenPlayers.add(player);
+        }
+
+        vbox.add(hbox); // Add hbox to vbox
+
+        return textField;
     }
 
     // Method to create GridBagConstraints 
@@ -218,28 +233,19 @@ public class LaserTag implements ActionListener
         // Print out red team names and IDs
         System.out.println("--------------------------------------\n");
         System.out.println(" * Red Team Player Names: ");
-        for (int i = 0; i < redPlayer.size(); i++)
+        for (int i = 0; i < redPlayers.size(); i++)
         {
-            System.out.println("\t * Player " + i + ": " + redPlayer.get(i) );
-        }
-        System.out.println(" * Red Team Player IDs: ");
-        for (int i = 0; i < redPlayerIDs.size(); i++)
-        {
-            System.out.println("\t\t -> ID: " + redPlayerIDs.get(i));
+            System.out.println("\t * Player " + i + ": " + redPlayers.get(i) );
         }
         
         //Print out green team names and IDs
         System.out.println("\n--------------------------------------\n");
         System.out.println(" * Green Team Player Names: ");
-        for (int i = 0; i < greenPlayer.size(); i++)
+        for (int i = 0; i < greenPlayers.size(); i++)
         {
-            System.out.println("\t -> Player " + i + ": " + greenPlayer.get(i) );
+            System.out.println("\t -> Player " + i + ": " + greenPlayers.get(i) );
         }
-        System.out.println(" * Green Team Player IDs: ");
-        for (int i = 0; i < greenPlayerIDs.size(); i++)
-        {
-            System.out.println("\t\t -> ID: " + greenPlayerIDs.get(i));
-        }
+        
         System.out.println("\n");
     }
 
@@ -252,9 +258,9 @@ public class LaserTag implements ActionListener
             // Handle the event triggered by the Enter key being pressed
             String text = textField.getText();
             if ( textField.getX() == 94 || textField.getX() == 102 )
-                redPlayer.add(new Player(text, null));
+                redPlayers.add(new Player(textField, text, null, "Red"));
             else
-                greenPlayer.add(new Player(text, null));
+                greenPlayers.add(new Player(textField, text, null, "Green"));
             System.out.println("\n * textField.getLocationOnScreen() for " + text + " = " + textField.getLocationOnScreen());
         }
         printTeams();
