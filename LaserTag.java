@@ -25,12 +25,39 @@ import java.awt.GridBagConstraints;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.*;
 // Other imports
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 
 public class LaserTag implements ActionListener 
 {
+	
+	// Connections to server and returns connection
+	public static Connection getConnection() {
+        Connection conn = null;
+		String url = "jdbc:postgresql://ec2-54-86-224-85.compute-1.amazonaws.com:5432/d7o8d02lik98h5?sslmode=require&user=uyxzxuqnymgnca&password=28ac4c9bcc607991c066ccdcb5bc72e1fac7f43dc34d02d0dd68262bc29db8a1";
+		try {
+			// Attempts to get connection from heroku
+			conn = DriverManager.getConnection(url);
+			
+			// Checks to see if connection was successful
+			if (conn != null) {
+				System.out.println("Connected to database");
+			} else {
+				System.out.println("Failed to connect");
+			}
+		
+		}
+		// Checks for SQL Exceptions
+		catch (SQLException e){
+			e.printStackTrace(System.err);
+		}
+		// Returns the heroku Connection
+		return conn;
+	}
+	
+	
     //Controller controller;
 
     // Team player names
@@ -51,6 +78,9 @@ public class LaserTag implements ActionListener
     //MAIN FUNCTION ============================================================================
     public static void main(String[] args) throws InterruptedException
     {  
+		// creates database connection object  
+		Connection db = getConnection();
+	
         // Create instance of JFrame
         JFrame frame = new JFrame("LASER TAG");
         
