@@ -22,9 +22,9 @@ public class LaserTag implements ActionListener
 
     // Variables
     private JTextField textField;
-    final private static Font mainFont = new Font("Serif", Font.PLAIN, 20); // Main text
-    final private static Font welcomeFont = new Font("Serif", Font.BOLD, 50); // Welcome label
-    final private static Font instructFont = new Font("Serif", Font.PLAIN, 30); // Instruction label
+    final private static Font mainFont = new Font("Dialog", Font.PLAIN, 15); // Main text
+    final private static Font welcomeFont = new Font("Dialog", Font.BOLD, 40); // Welcome label
+    final private static Font instructFont = new Font("Dialog", Font.PLAIN, 20); // Instruction label
 
     // Laser Tag Constructor
     public LaserTag(JTextField textField, ArrayList<Player> redTeam, ArrayList<Player> greenTeam) 
@@ -126,15 +126,15 @@ public class LaserTag implements ActionListener
         // Create textLabel for welcome text
         JLabel welcomeLabel = new JLabel("Welcome to Photon Main");
         JLabel instructLabel = new JLabel("Enter in your ID and Codename, then get ready to play!");
-        welcomeLabel.setFont(welcomeFont);
+        welcomeLabel.setFont(welcomeFont); // Set fonts
         instructLabel.setFont(instructFont);
-        welcomeLabel.setForeground(Color.white);
+        welcomeLabel.setForeground(Color.white); // Set text color
         instructLabel.setForeground(Color.white);
-        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center text
         instructLabel.setHorizontalAlignment(SwingConstants.CENTER);
         
         // Add emptyBorder for space
-        Border emptyBorder = BorderFactory.createEmptyBorder(50, 0, 120, 0);
+        Border emptyTextBorder = BorderFactory.createEmptyBorder(50, 0, 100, 0);
 
         // Create textPanel and add elements to it
         JPanel textPanel = new JPanel();
@@ -142,7 +142,7 @@ public class LaserTag implements ActionListener
         textPanel.setLayout(new GridLayout(2, 1, 5, 5));
         textPanel.add(welcomeLabel);
         textPanel.add(instructLabel);
-        textPanel.setBorder(emptyBorder);
+        textPanel.setBorder(emptyTextBorder);
 
         /**************************** Player Entry Panel ****************************/
         // Vertical boxes to hold horizontal box for name and id
@@ -173,21 +173,28 @@ public class LaserTag implements ActionListener
         
         // Horizontal box to hold the columns
         Box hbox = Box.createHorizontalBox();
-        hbox.add(vbox1name);
-        hbox.add(vbox1id);
+        Box hboxRed = Box.createHorizontalBox();
+        Box hboxGreen = Box.createHorizontalBox();
+        hboxRed.add(vbox1name);
+        hboxRed.add(vbox1id);
         hbox.add(Box.createHorizontalStrut(10));
-        hbox.add(vbox2name);
-        hbox.add(vbox2id);
+        hboxGreen.add(vbox2name);
+        hboxGreen.add(vbox2id);
 
         // ACreate playerEntryPanel
         JPanel playerEntryPanel = new JPanel();
         playerEntryPanel.setOpaque(false);
+        playerEntryPanel.add(hboxRed);
         playerEntryPanel.add(hbox);
+        playerEntryPanel.add(hboxGreen);
 
 
         /******************************** Button Panel ********************************/
         // Create start game button
         JButton button = new JButton("[F5] Start Game");
+        button.setFont(mainFont);
+        button.setPreferredSize(new Dimension(200, 50));
+
         // Add action listener to button
         button.addActionListener(new ActionListener()
         {
@@ -211,10 +218,14 @@ public class LaserTag implements ActionListener
             }
         });
 
+        // Add emptyBorder for space
+        Border emptyButtonBorder = BorderFactory.createEmptyBorder(0, 0, 50, 0);
+
         // Create buttonPanel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         buttonPanel.add(button);
+        buttonPanel.setBorder(emptyButtonBorder);
 
         /******************************** Main Frame ********************************/
         JPanel mainPanel = new JPanel();
@@ -235,6 +246,7 @@ public class LaserTag implements ActionListener
         // Create boxes
         Box hbox = Box.createHorizontalBox(); // Create box
         JLabel label = new JLabel(labelText); // Add label text
+        label.setFont(mainFont);
         label.setForeground(Color.white); // Set text color to white
         hbox.add(label); // Add label
         hbox.add(Box.createHorizontalStrut(10)); // Add space for label
