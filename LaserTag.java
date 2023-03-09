@@ -1,5 +1,6 @@
 // SWING imports
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.text.StyledEditorKit.ForegroundAction;
 // AWT imports
 import java.awt.*;
@@ -21,7 +22,9 @@ public class LaserTag implements ActionListener
 
     // Variables
     private JTextField textField;
-    final private static Font mainFont = new Font("Serif", Font.BOLD, 30);
+    final private static Font mainFont = new Font("Serif", Font.PLAIN, 20); // Main text
+    final private static Font welcomeFont = new Font("Serif", Font.BOLD, 50); // Welcome label
+    final private static Font instructFont = new Font("Serif", Font.PLAIN, 30); // Instruction label
 
     // Laser Tag Constructor
     public LaserTag(JTextField textField, ArrayList<Player> redTeam, ArrayList<Player> greenTeam) 
@@ -120,13 +123,26 @@ public class LaserTag implements ActionListener
     public static void addLayout(JFrame frame)
     {
         /******************************** Text Panel ********************************/
-        JLabel textLabel = new JLabel("Welcome to Laser Tag");
-        textLabel.setFont(mainFont);
-        textLabel.setForeground(Color.white);
+        // Create textLabel for welcome text
+        JLabel welcomeLabel = new JLabel("Welcome to Photon Main");
+        JLabel instructLabel = new JLabel("Enter in your ID and Codename, then get ready to play!");
+        welcomeLabel.setFont(welcomeFont);
+        instructLabel.setFont(instructFont);
+        welcomeLabel.setForeground(Color.white);
+        instructLabel.setForeground(Color.white);
+        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        instructLabel.setHorizontalAlignment(SwingConstants.CENTER);
         
+        // Add emptyBorder for space
+        Border emptyBorder = BorderFactory.createEmptyBorder(50, 0, 120, 0);
+
+        // Create textPanel and add elements to it
         JPanel textPanel = new JPanel();
         textPanel.setOpaque(false);
-        textPanel.add(textLabel);
+        textPanel.setLayout(new GridLayout(2, 1, 5, 5));
+        textPanel.add(welcomeLabel);
+        textPanel.add(instructLabel);
+        textPanel.setBorder(emptyBorder);
 
         /**************************** Player Entry Panel ****************************/
         // Vertical boxes to hold horizontal box for name and id
