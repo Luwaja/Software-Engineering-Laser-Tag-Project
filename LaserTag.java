@@ -1,33 +1,15 @@
 // SWING imports
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JWindow;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.Box;
+import javax.swing.*;
+import javax.swing.text.StyledEditorKit.ForegroundAction;
 // AWT imports
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Font;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
+import java.awt.*;
+import java.awt.event.*;
 // SQL imports
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 // Other imports
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
+import java.util.Timer;
 
 public class LaserTag implements ActionListener 
 {
@@ -39,6 +21,7 @@ public class LaserTag implements ActionListener
 
     // Variables
     private JTextField textField;
+    final private static Font mainFont = new Font("Serif", Font.BOLD, 30);
 
     // Laser Tag Constructor
     public LaserTag(JTextField textField, ArrayList<Player> redTeam, ArrayList<Player> greenTeam) 
@@ -51,6 +34,9 @@ public class LaserTag implements ActionListener
     //MAIN FUNCTION ============================================================================
     public static void main(String[] args) throws InterruptedException
     {  
+        // creates database connection object  
+		Connection db = getConnection();
+        
         // Create instance of JFrame
         JFrame frame = new JFrame("LASER TAG");
         
@@ -59,9 +45,90 @@ public class LaserTag implements ActionListener
         Thread.sleep(2000); //2 secs 
         splashScreen.setVisible(false);
 
-        // Create frame
+        // Create frame and add layout
         createFrame(frame);
+        addLayout(frame);
 
+        //Show frame
+        frame.setVisible(true);
+    }
+
+    // METHODS ==================================================================================================
+    // Method that connects to server and returns connection
+	public static Connection getConnection() {
+        Connection conn = null;
+		String url = "jdbc:postgresql://ec2-54-86-224-85.compute-1.amazonaws.com:5432/d7o8d02lik98h5?sslmode=require&user=uyxzxuqnymgnca&password=28ac4c9bcc607991c066ccdcb5bc72e1fac7f43dc34d02d0dd68262bc29db8a1";
+		try {
+			// Attempts to get connection from heroku
+			conn = DriverManager.getConnection(url);
+			
+			// Checks to see if connection was successful
+			if (conn != null) {
+				System.out.println("Connected to database");
+			} else {
+				System.out.println("Failed to connect");
+			}
+		
+		}
+		// Checks for SQL Exceptions
+		catch (SQLException e){
+			e.printStackTrace(System.err);
+		}
+		// Returns the heroku Connection
+		return conn;
+	}
+    
+    // Method to create splash screen
+    public static JWindow createSplashScreen(JFrame frame) throws InterruptedException
+    {
+        // Creating image
+        Image originalImage = Toolkit.getDefaultToolkit().getImage("PhotonLogo.jpg");
+        
+        // Scale down image
+        Image scaledImage = originalImage.getScaledInstance(660,308,Image.SCALE_SMOOTH);
+        JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
+        frame.add(imageLabel);
+
+        // Creating window splashscreen
+        JWindow splashScreen = new JWindow();
+        splashScreen.add(imageLabel); // Upload image
+        splashScreen.pack();
+        splashScreen.setLocationRelativeTo(null);
+        
+        // Sizing and centering the screen
+        splashScreen.setSize(660,308); 
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int centerX = (screenSize.width - splashScreen.getWidth())/2;
+        int centerY = (screenSize.height - splashScreen.getHeight())/2;
+        splashScreen.setLocation(centerX,centerY);
+        splashScreen.setVisible(true);
+    
+        return splashScreen;
+    }
+
+    // Method to create frame for application
+    public static void createFrame(JFrame frame) throws InterruptedException
+    {
+        // Loading JFrame window
+        frame.setSize(1920, 1080); 
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.getContentPane().setBackground(Color.darkGray);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+
+    public static void addLayout(JFrame frame)
+    {
+        /******************************** Text Panel ********************************/
+        JLabel textLabel = new JLabel("Welcome to Laser Tag");
+        textLabel.setFont(mainFont);
+        textLabel.setForeground(Color.white);
+        
+        JPanel textPanel = new JPanel();
+        textPanel.setOpaque(false);
+        textPanel.add(textLabel);
+
+        /**************************** Player Entry Panel ****************************/
         // Vertical boxes to hold horizontal box for name and id
         Box vbox1name = Box.createVerticalBox();
         Box vbox1id = Box.createVerticalBox();
@@ -96,104 +163,81 @@ public class LaserTag implements ActionListener
         hbox.add(vbox2name);
         hbox.add(vbox2id);
 
-        // Set the layout manager of the content pane to a GridBagLayout
-        Container contentPane = frame.getContentPane();
-        GridBagLayout layout = new GridBagLayout();
-        contentPane.setLayout(layout);
+        // ACreate playerEntryPanel
+        JPanel playerEntryPanel = new JPanel();
+        playerEntryPanel.setOpaque(false);
+        playerEntryPanel.add(hbox);
 
-        // Creating Constraints
-        GridBagConstraints playerEntryConstraints = createConstraints(0, 0, 1, 1, 0.0, 100, 100, 100, 100);
-        GridBagConstraints startButtonConstraints = createConstraints(0, 1, 1, 1, 1.0, 10, 10, 10, 10);
 
+        /******************************** Button Panel ********************************/
         // Create start game button
         JButton button = new JButton("[F5] Start Game");
-        button.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e) {
+        // Add action listener to button
+        button.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
                 buttonMethod();
             }
         });
-        button.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
+        // Make F5 key activate button
+        button.addKeyListener(new KeyAdapter() 
+        {
+            @Override
+            public void keyPressed(KeyEvent e) 
+            {
                 System.out.println("1");
-                if (e.getKeyCode() == KeyEvent.VK_F5) {
+                if (e.getKeyCode() == KeyEvent.VK_F5) 
+                {
                     buttonMethod();
                 }
             }
         });
 
-        // Add the boxes to the content pane
-        contentPane.add(hbox, playerEntryConstraints);
-        contentPane.add(button, startButtonConstraints);
+        // Create buttonPanel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(button);
 
-        //Show frame
-        frame.setVisible(true);
-    }
+        /******************************** Main Frame ********************************/
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setBackground(Color.darkGray);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainPanel.add(textPanel, BorderLayout.NORTH);
+        mainPanel.add(playerEntryPanel, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
+        frame.add(mainPanel);
 
-    // METHODS ==================================================================================================
-    // Method to create splash screen
-    public static JWindow createSplashScreen(JFrame frame) throws InterruptedException
-    {
-        // Creating image
-        Image originalImage = Toolkit.getDefaultToolkit().getImage("PhotonLogo.jpg");
-        
-        // Scale down image
-        Image scaledImage = originalImage.getScaledInstance(660,308,Image.SCALE_SMOOTH);
-        JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
-        frame.add(imageLabel);
-
-        // Creating window splashscreen
-        JWindow splashScreen = new JWindow();
-        splashScreen.add(imageLabel); // Upload image
-        splashScreen.pack();
-        splashScreen.setLocationRelativeTo(null);
-        
-        // Sizing and centering the screen
-        splashScreen.setSize(660,308); 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int centerX = (screenSize.width - splashScreen.getWidth())/2;
-        int centerY = (screenSize.height - splashScreen.getHeight())/2;
-        splashScreen.setLocation(centerX,centerY);
-        splashScreen.setVisible(true);
-    
-        return splashScreen;
-    }
-
-
-    // Method to create frame for application
-    public static void createFrame(JFrame frame) throws InterruptedException
-    {
-        // Loading JFrame window
-        frame.setSize(1920, 1080); 
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.getContentPane().setBackground(Color.darkGray);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
     }
 
     // Method to create and add a horizontal box to a vertical box
     private static JTextField addHorizontalBox(Box vbox, String labelText, ArrayList<Player> redPlayers, ArrayList<Player> greenPlayers)
     {
         // Create boxes
-        Box hbox = Box.createHorizontalBox();
-        JLabel label = new JLabel(labelText);
-        label.setForeground(Color.white);    
-        hbox.add(label);                                    // Add label
-        hbox.add(Box.createHorizontalStrut(10));     // Add space for label
+        Box hbox = Box.createHorizontalBox(); // Create box
+        JLabel label = new JLabel(labelText); // Add label text
+        label.setForeground(Color.white); // Set text color to white
+        hbox.add(label); // Add label
+        hbox.add(Box.createHorizontalStrut(10)); // Add space for label
         JTextField textField = new JTextField(10); // Add text field
         // Add action listener to each text field
         LaserTag listener = new LaserTag(textField, redPlayers, greenPlayers); // Allows enter to be used to add players 
         textField.addActionListener(listener);                                 // from text fields into respective arrays
         hbox.add(textField); // Add textfield to hbox
         
-        // Create player object and add it to the respective arrays
+        // Creates player objects and adds them to their respective arraylists
         if (labelText.contains("Red"))
         {
+            // Creates player object with a textField and adds it to the redPlayer arraylist
             Player player = new Player(textField, null, labelText.substring(12), "Red");
             redPlayers.add(player);
         }
         else if (labelText.contains("Green"))
         {
+            // Creates player object with a textField and adds it to the greenPlayer arraylist
             Player player = new Player(textField, null, labelText.substring(14), "Green");
             greenPlayers.add(player);
         }
@@ -203,32 +247,22 @@ public class LaserTag implements ActionListener
         return textField;
     }
 
-    // Method to create GridBagConstraints 
-    private static GridBagConstraints createConstraints(int gridx, int gridy, int gridwidth, int gridHeight, double weightx, int insetsTop, int insetsLeft, int insetsRight, int insetsBottom)
-    {
-        // Create new constraint
-        GridBagConstraints methodConstraints = new GridBagConstraints();
-        // Set constraints with passed in values
-        methodConstraints.gridx = gridx;
-        methodConstraints.gridy = gridy;
-        methodConstraints.gridwidth = gridwidth;
-        methodConstraints.gridheight = gridHeight; 
-        methodConstraints.weightx = weightx;
-        methodConstraints.insets = new Insets(insetsTop, insetsLeft, insetsRight, insetsBottom);
-        methodConstraints.fill = GridBagConstraints.NONE;
-        // Return method constraint
-        return methodConstraints;
-    }
-
     // Method for when button is pressed
     public static void buttonMethod()
     {
         System.out.println("BUTTON METHOD");
+        printTeams();
     }
 
+    // Method that creates a countdown timer
+    public static void countdownTimer()
+    {
+        Timer timer = new Timer();
+        
+    }
 
     // Method to print out array lists of players names
-    public void printTeams()
+    public static void printTeams()
     {
         // Print out red team names and IDs
         System.out.println("--------------------------------------\n");
@@ -249,7 +283,6 @@ public class LaserTag implements ActionListener
         System.out.println("\n");
     }
 
-
     // ACTION PERFORMED =========================================================================================================
     public void actionPerformed(ActionEvent e)
 	{
@@ -257,13 +290,14 @@ public class LaserTag implements ActionListener
         {
             // Handle the event triggered by the Enter key being pressed
             String text = textField.getText();
-            if ( textField.getX() == 94 || textField.getX() == 102 )
-                redPlayers.add(new Player(textField, text, null, "Red"));
-            else
-                greenPlayers.add(new Player(textField, text, null, "Green"));
-            System.out.println("\n * textField.getLocationOnScreen() for " + text + " = " + textField.getLocationOnScreen());
+
+            // String text = textField.getText();
+            // if ( textField.getX() == 94 || textField.getX() == 102 )
+            //     redPlayers.add(new Player(textField, text, null, "Red"));
+            // else
+            //     greenPlayers.add(new Player(textField, text, null, "Green"));
+            // System.out.println("\n * textField.getLocationOnScreen() for " + text + " = " + textField.getLocationOnScreen());
         }
-        printTeams();
 	}
 
 }
