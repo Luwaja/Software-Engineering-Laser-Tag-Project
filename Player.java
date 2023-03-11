@@ -1,4 +1,3 @@
-
 // headers
 import javax.swing.JTextField;
 // key listeners
@@ -40,6 +39,12 @@ public class Player
             @Override
             public void keyReleased(KeyEvent e) {}
         });
+
+    }
+
+    public void update(){
+        this.ID = textFieldID.getText();
+        this.Name =textFieldName.getText();
 
     }
 
