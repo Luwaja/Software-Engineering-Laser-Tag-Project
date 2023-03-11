@@ -412,7 +412,14 @@ public class LaserTag implements ActionListener
     {
         System.out.println("BUTTON METHOD");
         //changeCard();
-        printTeams();
+
+        //loop through players and call update methods
+        for (int i = 0; i < redPlayers.size(); i++)
+            redPlayers.get(i).update();
+        for (int i = 0; i < greenPlayers.size(); i++)
+            greenPlayers.get(i).update();
+
+            printTeams();
     }
 
     // Method that creates a countdown timer
