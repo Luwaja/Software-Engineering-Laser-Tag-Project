@@ -42,6 +42,11 @@ public class Player
         this.ID = id;
     }
 
+    public void setTeamColor(String teamcolor)
+    {
+        this.teamColor = teamcolor;
+    }
+
     public JTextField getTextFieldName()
     {
         return textFieldName;
@@ -60,6 +65,11 @@ public class Player
     public String getID()
     {
         return ID;
+    }
+
+    public String getTeamColor()
+    {
+        return teamColor;
     }
 
     public int getTotalScore()
