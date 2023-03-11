@@ -14,14 +14,18 @@ import java.util.Timer;
 
 public class LaserTag implements ActionListener 
 {
-    //Controller controller;
-
+    // Variables
+    private JTextField textField;
+    
+    // Card Variables
+    private JPanel cardPanel;
+    private CardLayout cardLayout;
+    
     // Team player names
     private static ArrayList<Player> redPlayers = new ArrayList<Player>();
     private static ArrayList<Player> greenPlayers = new ArrayList<Player>();
-
-    // Variables
-    private JTextField textField;
+    
+    // Fonts
     final private static Font mainFont = new Font("Dialog", Font.PLAIN, 15); // Main text
     final private static Font welcomeFont = new Font("Dialog", Font.BOLD, 40); // Welcome label
     final private static Font instructFont = new Font("Dialog", Font.PLAIN, 20); // Instruction label
@@ -37,6 +41,9 @@ public class LaserTag implements ActionListener
     //MAIN FUNCTION ============================================================================
     public static void main(String[] args) throws InterruptedException
     {  
+        // Create instance of LaserTag
+        LaserTag laserTag = new LaserTag(null, redPlayers, greenPlayers);
+
         // creates database connection object  
 		Connection db = getConnection();
         
@@ -50,9 +57,9 @@ public class LaserTag implements ActionListener
 
         // Create frame and add layout
         createFrame(frame);
-        JPanel playerEntryPanel = createPlayerEntry();
-        JPanel actionDisplayPanel = createActionDisplay();
-        setLayout(frame, playerEntryPanel, actionDisplayPanel);
+        JPanel playerEntryPanel = laserTag.createPlayerEntry();
+        JPanel actionDisplayPanel = laserTag.createActionDisplay();
+        laserTag.setLayout(frame, playerEntryPanel, actionDisplayPanel);
 
         //Show frame
         frame.setVisible(true);
@@ -123,7 +130,7 @@ public class LaserTag implements ActionListener
     }
 
     // PLAYER ENTRY SCREEN ================================================================
-    public static JPanel createPlayerEntry()
+    public JPanel createPlayerEntry()
     {
         /******************************** Text Panel ********************************/
         // Create textLabel for welcome text
@@ -156,16 +163,16 @@ public class LaserTag implements ActionListener
         {
             if (i <= 8)
             {
-                addHorizontalBox(vbox1name, "Player " + (i+1) + "     ID: ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox1name, "Red Player " + (i+1) + "     ID: ", redPlayers, greenPlayers);
                 addHorizontalBox(vbox1id, "   Codename: ", redPlayers, greenPlayers);
-                addHorizontalBox(vbox2name, "Player " + (i+1) + "     ID: ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox2name, "Green Player " + (i+1) + "     ID: ", redPlayers, greenPlayers);
                 addHorizontalBox(vbox2id, "   Codename: ", redPlayers, greenPlayers);
             }
             else
             {
-                addHorizontalBox(vbox1name, "Player " + (i+1) + "   ID: ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox1name, "Red Player " + (i+1) + "   ID: ", redPlayers, greenPlayers);
                 addHorizontalBox(vbox1id, "   Codename: ", redPlayers, greenPlayers);
-                addHorizontalBox(vbox2name, "Player " + (i+1) + "   ID: ", redPlayers, greenPlayers);
+                addHorizontalBox(vbox2name, "Green Player " + (i+1) + "   ID: ", redPlayers, greenPlayers);
                 addHorizontalBox(vbox2id, "   Codename: ", redPlayers, greenPlayers);
             }
             
@@ -245,7 +252,7 @@ public class LaserTag implements ActionListener
 
     // ACTION DISPLAY SCREEN ================================================================================
     // Method to create actionDisplayPanel
-    public static JPanel createActionDisplay()
+    public JPanel createActionDisplay()
     {
         /******************************** Teams Panel ********************************/
         // Red team: Create panels, boxes, and labels
@@ -337,25 +344,29 @@ public class LaserTag implements ActionListener
     }
 
     // Set panels from layout to card panel and add to frame
-    public static void setLayout(JFrame frame, JPanel playerEntryPanel, JPanel actionDisplayPanel)
+    public void setLayout(JFrame frame, JPanel playerEntryPanel, JPanel actionDisplayPanel)
     {
         /******************************** Card Panel ********************************/
-        JPanel cardPanel = new JPanel(new CardLayout());
-        //cardPanel.add(playerEntryPanel, "Panel 1");
+        // Create cardLayout and cardPanel
+        cardLayout = new CardLayout();
+        cardPanel = new JPanel(cardLayout);
+        
+        // Add panels to cardPanel
+        cardPanel.add(playerEntryPanel, "Panel 1");
         cardPanel.add(actionDisplayPanel, "Panel 2");
 
         // Add cardPanel to frame
         frame.add(cardPanel);
     }
 
-    // // Method to change screens
-    // public static void changeCard(JPanel cardPanel)
-    // {
-
-    // }
+    // Method to change screens
+    public void changeCard()
+    {
+        cardLayout.show(cardPanel, "Panel 2");
+    }
 
     // Method to create and add a horizontal box to a vertical box
-    private static JTextField addHorizontalBox(Box vbox, String labelText, ArrayList<Player> redPlayers, ArrayList<Player> greenPlayers)
+    private JTextField addHorizontalBox(Box vbox, String labelText, ArrayList<Player> redPlayers, ArrayList<Player> greenPlayers)
     {
         // Create boxes
         Box hbox = Box.createHorizontalBox(); // Create box
@@ -390,22 +401,22 @@ public class LaserTag implements ActionListener
     }
 
     // Method for when button is pressed
-    public static void buttonMethod()
+    public void buttonMethod()
     {
         System.out.println("BUTTON METHOD");
-        //changeCard();
+        changeCard();
         printTeams();
     }
 
     // Method that creates a countdown timer
-    public static void countdownTimer()
+    public void countdownTimer()
     {
         Timer timer = new Timer();
         
     }
 
     // Method to print out array lists of players names
-    public static void printTeams()
+    public void printTeams()
     {
         // Print out red team names and IDs
         System.out.println("--------------------------------------\n");
