@@ -106,6 +106,7 @@ public class Player
     @Override 
     public String toString()
     {
+
 	    return "info :\n\t\t name = " + Name + "\n\t\t id = " + ID + "\n\t\t team color = " + teamColor + "\n\t\t total score = " + totalScore + "\n\t\t";
     }
 }

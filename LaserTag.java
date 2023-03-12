@@ -1,16 +1,9 @@
-// SWING imports
+// Imports
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.text.StyledEditorKit.ForegroundAction;
-// AWT imports
 import java.awt.*;
 import java.awt.event.*;
-// SQL imports
 import java.sql.*;
-// Other imports
-import java.time.temporal.TemporalAccessor;
-import java.util.ArrayList;
-import java.util.Timer;
+import java.util.*;
 
 public class LaserTag implements ActionListener 
 {
@@ -26,6 +19,12 @@ public class LaserTag implements ActionListener
     // Team player names
     private static ArrayList<Player> redPlayers = new ArrayList<Player>();
     private static ArrayList<Player> greenPlayers = new ArrayList<Player>();
+
+    // Screen size
+    private Toolkit tk = Toolkit.getDefaultToolkit();
+    private Dimension screenSize = tk.getScreenSize();
+    private int screenWidth = (int) screenSize.getWidth();
+    private int screenHeight = (int) screenSize.getHeight();
     
     // Fonts
     final private static Font mainFont = new Font("Dialog", Font.PLAIN, 15); // Main text
@@ -59,10 +58,13 @@ public class LaserTag implements ActionListener
         splashScreen.setVisible(false);
 
         // Create frame and add layout
-        createFrame(frame);
+
+        laserTag.createFrame(frame);
         JPanel playerEntryPanel = laserTag.createPlayerEntry();
         JPanel actionDisplayPanel = laserTag.createActionDisplay();
         laserTag.setLayout(frame, playerEntryPanel, actionDisplayPanel);
+        // If button is pressed in playerEntryPanel
+        laserTag.pressedKey(frame);
 
         //Show frame
         frame.setVisible(true);
@@ -122,10 +124,10 @@ public class LaserTag implements ActionListener
     }
 
     // Method to create frame for application
-    public static void createFrame(JFrame frame) throws InterruptedException
+    public void createFrame(JFrame frame) throws InterruptedException
     {
         // Loading JFrame window
-        frame.setSize(1920, 1080); 
+        frame.setSize(screenSize); 
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.getContentPane().setBackground(Color.darkGray);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -164,13 +166,13 @@ public class LaserTag implements ActionListener
         {
             if (i <= 8)
             {
-                addHorizontalBox(vboxRed, "Red Player " + (i+1) + "     ID: ", "Codename: ", redPlayers, greenPlayers);
-                addHorizontalBox(vboxGreen, "Green Player " + (i+1) + "     ID: ", "Codename: ", redPlayers, greenPlayers);
+                addHorizontalBox(vboxRed, "Red Player " + (i+1) + "     ID: ", "  Codename: ", redPlayers, greenPlayers);
+                addHorizontalBox(vboxGreen, "Green Player " + (i+1) + "     ID: ", "  Codename: ", redPlayers, greenPlayers);
             }
             else
             {
-                addHorizontalBox(vboxRed, "Red Player " + (i+1) + "   ID: ", "Codename: ", redPlayers, greenPlayers);
-                addHorizontalBox(vboxGreen, "Green Player " + (i+1) + "   ID: ", "Codename: ", redPlayers, greenPlayers);
+                addHorizontalBox(vboxRed, "Red Player " + (i+1) + "   ID: ", "  Codename: ", redPlayers, greenPlayers);
+                addHorizontalBox(vboxGreen, "Green Player " + (i+1) + "   ID: ", "  Codename: ", redPlayers, greenPlayers);
             }
             
         }
@@ -194,18 +196,18 @@ public class LaserTag implements ActionListener
 
         // Create playerEntryPanel
         JPanel boxesPanel = new JPanel();
+        boxesPanel.setPreferredSize(new Dimension((screenWidth/2), (screenHeight/2)));
         boxesPanel.setOpaque(false);
         boxesPanel.add(redTeamPanel);
         boxesPanel.add(hboxStrut);
         boxesPanel.add(greenTeamPanel);
-
 
         /******************************** Button Panel ********************************/
         // Create start game button
         JButton button = new JButton("[F5] Start Game");
         button.setFont(mainFont);
         button.setPreferredSize(new Dimension(200, 50));
-
+        
         // Add action listener to button
         button.addActionListener(new ActionListener()
         {
@@ -214,19 +216,7 @@ public class LaserTag implements ActionListener
                 buttonMethod();
             }
         });
-        // Make F5 key activate button
-        button.addKeyListener(new KeyAdapter() 
-        {
-            public void keyPressed(KeyEvent e) 
-            {
-                System.out.println("1");
-                if (e.getKeyCode() == KeyEvent.VK_F5) 
-                {
-                    buttonMethod();
-                }
-            }
-        });
-
+        
         // Create buttonPanel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
@@ -263,7 +253,7 @@ public class LaserTag implements ActionListener
         hboxRedTeam.add(redTitleLabel);
         vboxRedTeam.add(hboxRedTeam);
         // set panel attributes
-        redTeam.setPreferredSize(new Dimension(600, 500));
+        redTeam.setPreferredSize(new Dimension((int) (screenWidth/2.125), (screenHeight/2)));
         redTeam.setBorder(BorderFactory.createLineBorder(Color.red));
         redTeam.setOpaque(false);
         redTeam.add(hboxRedTeam);
@@ -288,7 +278,7 @@ public class LaserTag implements ActionListener
         hboxGreenTeam.add(greenTitleLabel);
         vboxGreenTeam.add(hboxGreenTeam);
         // Set panel attributes
-        greenTeam.setPreferredSize(new Dimension(600, 500));
+        greenTeam.setPreferredSize(new Dimension((int) (screenWidth/2.125), (screenHeight/2)));
         greenTeam.setBorder(BorderFactory.createLineBorder(Color.green));
         greenTeam.setOpaque(false);
         greenTeam.add(hboxGreenTeam);
@@ -309,16 +299,15 @@ public class LaserTag implements ActionListener
         /******************************** Game Panel ********************************/
         JLabel gameTitleLabel = new JLabel("GAME ACTION");
         gameTitleLabel.setFont(welcomeFont);
-        gameTitleLabel.setForeground(Color.pink);
+        gameTitleLabel.setForeground(Color.white);
         gameTitleLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
         // Create gamePanel and add elements
         JPanel gamePanel = new JPanel();
-        gamePanel.setPreferredSize(new Dimension(1200, 200));
-        gamePanel.setBorder(BorderFactory.createLineBorder(Color.pink));
+        gamePanel.setPreferredSize(new Dimension((screenWidth/2), (int) (screenHeight/3.25)));
+        gamePanel.setBorder(BorderFactory.createLineBorder(Color.white));
         gamePanel.setOpaque(false);
         gamePanel.add(gameTitleLabel);
-
 
         /******************************** Action Display Panel ********************************/
         JLabel actionLabel = new JLabel("Action Display");
@@ -416,22 +405,8 @@ public class LaserTag implements ActionListener
 
         return new JTextField[] {textFieldID, textFieldName};
     }
-
-    // Method for when button is pressed
-    public void buttonMethod()
-    {
-        changeCard();
-
-        updateMethod();
-        // //loop through players and call update methods
-        // for (int i = 0; i < redPlayers.size(); i++)
-        //     redPlayers.get(i).update();
-        // for (int i = 0; i < greenPlayers.size(); i++)
-        //     greenPlayers.get(i).update();
-
-        printTeams();
-    }
-    
+ 
+    // Method for updating the players
     private void updateMethod()
     {
         //loop through players and call update methods
@@ -441,6 +416,30 @@ public class LaserTag implements ActionListener
             greenPlayers.get(i).update();
     }
 
+    public void pressedKey(JFrame frame)
+    {
+        // Make F5 key activate button
+        frame.addKeyListener(new KeyAdapter() 
+        {
+            public void keyPressed(KeyEvent e) 
+            {
+                System.out.println("1");
+                if (e.getKeyCode() == KeyEvent.VK_F5) 
+                {
+                    buttonMethod();
+                }
+            }
+        });
+    }
+
+    // Method for when button is pressed
+    public void buttonMethod()
+    {
+        changeCard();
+        updateMethod();
+        printTeams();
+    }
+    
     // Method that creates a countdown timer
     public void countdownTimer(int countdownSeconds)
     {
