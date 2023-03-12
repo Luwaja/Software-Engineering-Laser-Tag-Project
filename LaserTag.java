@@ -54,7 +54,7 @@ public class LaserTag implements ActionListener
         
         //Open splash screen for 3 seconds and close
         JWindow splashScreen = createSplashScreen(frame);
-        Thread.sleep(2000); //2 secs 
+        Thread.sleep(3000); //3 secs 
         splashScreen.setVisible(false);
 
         // Create frame and add layout
@@ -423,7 +423,6 @@ public class LaserTag implements ActionListener
         {
             public void keyPressed(KeyEvent e) 
             {
-                System.out.println("1");
                 if (e.getKeyCode() == KeyEvent.VK_F5) 
                 {
                     buttonMethod();
