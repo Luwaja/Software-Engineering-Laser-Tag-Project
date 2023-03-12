@@ -54,10 +54,11 @@ public class LaserTag implements ActionListener
         
         //Open splash screen for 3 seconds and close
         JWindow splashScreen = createSplashScreen(frame);
-        Thread.sleep(3000); //3 secs 
+        Thread.sleep(2000); //2 secs 
         splashScreen.setVisible(false);
 
         // Create frame and add layout
+
         laserTag.createFrame(frame);
         JPanel playerEntryPanel = laserTag.createPlayerEntry();
         JPanel actionDisplayPanel = laserTag.createActionDisplay();
