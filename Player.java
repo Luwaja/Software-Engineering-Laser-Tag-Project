@@ -33,6 +33,7 @@ public class Player
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     // Set the ID attribute to the value entered in the textFieldID
                     ID = textFieldID.getText();
+                    Name = textFieldName.getText();
                 }
             }
 
