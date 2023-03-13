@@ -1,5 +1,6 @@
 // Imports
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
@@ -11,6 +12,10 @@ public class LaserTag implements ActionListener
     private JTextField textField;
     private JTextField textFieldID;
     private JTextField textFieldName;
+
+    private int sec = 30;
+    private JLabel timerLabel;
+    private Timer timer;
     
     // Card Variables
     private JPanel cardPanel;
@@ -148,12 +153,18 @@ public class LaserTag implements ActionListener
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center text
         instructLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
+        timerLabel = new JLabel(":" + sec);
+        timerLabel.setFont(mainFont); // Set fonts
+        timerLabel.setForeground(Color.white); // Set text color
+        timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
         // Create textPanel and add elements to it
         JPanel textPanel = new JPanel();
         textPanel.setOpaque(false);
-        textPanel.setLayout(new GridLayout(2, 1, 5, 5));
+        textPanel.setLayout(new GridLayout(3, 1, 5, 5));
         textPanel.add(welcomeLabel);
         textPanel.add(instructLabel);
+        textPanel.add(timerLabel);
         textPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 50, 0)); // Add emptyBorder for space);
 
         /************************* Boxes Panel ****************************/
@@ -434,15 +445,37 @@ public class LaserTag implements ActionListener
     // Method for when button is pressed
     public void buttonMethod()
     {
+        countdownTimer();
         changeCard();
         updateMethod();
         printTeams();
     }
-    
+
     // Method that creates a countdown timer
-    public void countdownTimer(int countdownSeconds)
+    public void countdownTimer()
     {
-       
+        for(int i = sec; i > 0; i--){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            sec--;
+            timerLabel.setText(":" + sec);
+            //timerLabel.setText(Integer.toString(sec));    
+        }
+        // timer = new Timer(1000, new ActionListener() {
+        // public void actionPerformed(ActionEvent e) {
+        //     seconds--;
+        //     if (seconds >= 0) {
+        //         //ctimer = String.valueOf(seconds);
+        //         timerLabel.setText(seconds + " seconds");
+        //     } else {
+        //         timer.stop();
+        //     }
+        // }
+        // });
+        // timer.start(); // start the timer
     }
 
     // Method to print out array lists of players names
