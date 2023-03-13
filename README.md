@@ -6,11 +6,16 @@ Sprint 2 ✔
 + Create player entry screen
 + Link database to application, add two players via application
 
-Sprint 3 🆕
+Sprint 3 ✔
 + Create play action display
     - (No events yet, make sure to have the players showing up in the team windows)
 + Code up f5 key to switch to play action display and start game
 + Code up game start count-down timer
+
+Sprint 4 🆕
++ Add network sockets
++ Add random music track selection
++ Run game using traffic generator (provided by instructor)
 
 =============================Instructions=============================
 1. Download the postgresql JDBC driver located here: https://jdbc.postgresql.org/download/ and place it the folder
