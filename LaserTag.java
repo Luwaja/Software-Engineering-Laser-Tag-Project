@@ -429,6 +429,7 @@ public class LaserTag implements ActionListener
 
             // Add labels to boxes and boxes to redTeam panel
             hbox.add(idLabel);
+            hbox.add(Box.createHorizontalStrut(20));
             hbox.add(cnLabel);
             vbox1.add(hbox);
         }
@@ -449,6 +450,7 @@ public class LaserTag implements ActionListener
 
             // Add labels to boxes and boxes to greenTeam panel
             hbox.add(idLabel);
+            hbox.add(Box.createHorizontalStrut(20));
             hbox.add(cnLabel);
             vbox2.add(hbox);
         }
