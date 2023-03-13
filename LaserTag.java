@@ -1,6 +1,5 @@
 // Imports
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
@@ -13,10 +12,15 @@ public class LaserTag implements ActionListener
     private JTextField textFieldID;
     private JTextField textFieldName;
 
-    private int sec = 30;
+    // Timer variables
+    private static final int timerDelay = 1000;
+    private static final int timerPeriod = 1000;
     private JLabel timerLabel;
-    private Timer timer;
-    
+    private int playerEntrySeconds = 31;
+    private String playerEntryPhrase = "Starting the game in:";
+    private int actionDisplaySeconds = 360;
+    private String actionDisplayPhrase = "Time left in the game:";
+
     // Card Variables
     private JPanel cardPanel;
     private CardLayout cardLayout;
@@ -32,9 +36,11 @@ public class LaserTag implements ActionListener
     private int screenHeight = (int) screenSize.getHeight();
     
     // Fonts
-    final private static Font mainFont = new Font("Dialog", Font.PLAIN, 15); // Main text
+    
     final private static Font welcomeFont = new Font("Dialog", Font.BOLD, 40); // Welcome label
     final private static Font instructFont = new Font("Dialog", Font.PLAIN, 20); // Instruction label
+    final private static Font mainFont = new Font("Dialog", Font.PLAIN, 15); // Main text
+    final private static Font timerFont = new Font("Dialog", Font.PLAIN, 25); // Timer label
 
     // Laser Tag Constructor
     public LaserTag(JTextField textFieldID, JTextField textFieldName, ArrayList<Player> redTeam, ArrayList<Player> greenTeam) 
@@ -153,18 +159,12 @@ public class LaserTag implements ActionListener
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center text
         instructLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        timerLabel = new JLabel(":" + sec);
-        timerLabel.setFont(mainFont); // Set fonts
-        timerLabel.setForeground(Color.white); // Set text color
-        timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
         // Create textPanel and add elements to it
         JPanel textPanel = new JPanel();
         textPanel.setOpaque(false);
         textPanel.setLayout(new GridLayout(3, 1, 5, 5));
         textPanel.add(welcomeLabel);
         textPanel.add(instructLabel);
-        textPanel.add(timerLabel);
         textPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 50, 0)); // Add emptyBorder for space);
 
         /************************* Boxes Panel ****************************/
@@ -207,17 +207,29 @@ public class LaserTag implements ActionListener
 
         // Create playerEntryPanel
         JPanel boxesPanel = new JPanel();
-        boxesPanel.setPreferredSize(new Dimension((screenWidth/2), (screenHeight/2)));
+        //boxesPanel.setPreferredSize(new Dimension((screenWidth/2), (screenHeight/2)));
         boxesPanel.setOpaque(false);
         boxesPanel.add(redTeamPanel);
         boxesPanel.add(hboxStrut);
         boxesPanel.add(greenTeamPanel);
 
         /******************************** Button Panel ********************************/
+        // Create timerLabel and timerPanel
+        timerLabel = new JLabel("");
+        timerLabel.setFont(timerFont); // Set fonts
+        timerLabel.setForeground(Color.white); // Set text color
+        timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        JPanel timerPanel = new JPanel();
+        timerPanel.add(timerLabel);
+        timerPanel.setOpaque(false);
+        
         // Create start game button
         JButton button = new JButton("[F5] Start Game");
         button.setFont(mainFont);
         button.setPreferredSize(new Dimension(200, 50));
+        JPanel startButtonPanel = new JPanel();
+        startButtonPanel.add(button);
+        startButtonPanel.setOpaque(false);
         
         // Add action listener to button
         button.addActionListener(new ActionListener()
@@ -231,7 +243,9 @@ public class LaserTag implements ActionListener
         // Create buttonPanel
         JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
-        buttonPanel.add(button);
+        buttonPanel.add(timerPanel);
+        buttonPanel.add(startButtonPanel);
+        buttonPanel.setLayout(new GridLayout(2, 1, 0, 50));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 50, 0)); // Add emptyBorder for space
 
         /******************************** Player Entry Panel ********************************/
@@ -426,7 +440,7 @@ public class LaserTag implements ActionListener
         for (int i = 0; i < greenPlayers.size(); i++)
             greenPlayers.get(i).update();
     }
-
+    // Method for when F5 key is pressed
     public void pressedKey(JFrame frame)
     {
         // Make F5 key activate button
@@ -445,37 +459,39 @@ public class LaserTag implements ActionListener
     // Method for when button is pressed
     public void buttonMethod()
     {
-        countdownTimer();
-        changeCard();
+        countdownTimer(playerEntrySeconds, playerEntryPhrase);
         updateMethod();
         printTeams();
     }
 
-    // Method that creates a countdown timer
-    public void countdownTimer()
+    // Method that creates a countdown timer based on a passed in # of seconds
+    public void countdownTimer(int seconds, String phrase)
     {
-        for(int i = sec; i > 0; i--){
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        // Create timer to run at a fixed rate specified by delay and period
+        java.util.Timer timer = new java.util.Timer();
+        timer.scheduleAtFixedRate(new TimerTask() 
+        {
+            int secondsRemaining = seconds;
+            public void run() 
+            {
+                // If 
+                if (secondsRemaining > 0) 
+                {
+                    secondsRemaining--;
+                    timerLabel.setText(phrase + " " + String.valueOf(secondsRemaining) + " seconds!");
+                } else 
+                {
+                    timer.cancel();
+                    changeCard();
+                    actionDisplayTimer();
+                }
             }
-            sec--;
-            timerLabel.setText(":" + sec);
-            //timerLabel.setText(Integer.toString(sec));    
-        }
-        // timer = new Timer(1000, new ActionListener() {
-        // public void actionPerformed(ActionEvent e) {
-        //     seconds--;
-        //     if (seconds >= 0) {
-        //         //ctimer = String.valueOf(seconds);
-        //         timerLabel.setText(seconds + " seconds");
-        //     } else {
-        //         timer.stop();
-        //     }
-        // }
-        // });
-        // timer.start(); // start the timer
+        }, timerDelay, timerPeriod);
+    }
+
+    public void actionDisplayTimer()
+    {
+        countdownTimer(actionDisplaySeconds, actionDisplayPhrase);
     }
 
     // Method to print out array lists of players names
