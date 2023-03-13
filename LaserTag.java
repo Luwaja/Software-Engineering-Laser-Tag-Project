@@ -12,18 +12,13 @@ public class LaserTag implements ActionListener
     private JTextField textFieldID;
     private JTextField textFieldName;
 
-    // Timer variables
-    private static final int timerDelay = 1000;
-    private static final int timerPeriod = 1000;
-    private JLabel timerLabel;
-    private int playerEntrySeconds = 31;
-    private String playerEntryPhrase = "Starting the game in:";
-    private int actionDisplaySeconds = 360;
-    private String actionDisplayPhrase = "Time left in the game:";
-
     // Card Variables
     private JPanel cardPanel;
     private CardLayout cardLayout;
+    private JPanel redTeamPanel;
+    private JPanel greenTeamPanel;
+    private JPanel redTeamBoxPanel;
+    private JPanel greenTeamBoxPanel;
     
     // Team player names
     private static ArrayList<Player> redPlayers = new ArrayList<Player>();
@@ -34,9 +29,17 @@ public class LaserTag implements ActionListener
     private Dimension screenSize = tk.getScreenSize();
     private int screenWidth = (int) screenSize.getWidth();
     private int screenHeight = (int) screenSize.getHeight();
+
+    // Timer variables
+    private static final int timerDelay = 1000;
+    private static final int timerPeriod = 1000;
+    private JLabel timerLabel;
+    private int playerEntrySeconds = 3;
+    private String playerEntryPhrase = "Starting the game in:";
+    private int actionDisplaySeconds = 360;
+    private String actionDisplayPhrase = "Time left in the game:";
     
     // Fonts
-    
     final private static Font welcomeFont = new Font("Dialog", Font.BOLD, 40); // Welcome label
     final private static Font instructFont = new Font("Dialog", Font.PLAIN, 20); // Instruction label
     final private static Font mainFont = new Font("Dialog", Font.PLAIN, 15); // Main text
@@ -69,7 +72,6 @@ public class LaserTag implements ActionListener
         splashScreen.setVisible(false);
 
         // Create frame and add layout
-
         laserTag.createFrame(frame);
         JPanel playerEntryPanel = laserTag.createPlayerEntry();
         JPanel actionDisplayPanel = laserTag.createActionDisplay();
@@ -110,7 +112,7 @@ public class LaserTag implements ActionListener
 	private static void sqInsert(Connection connect, Player player)
 	{
 		try {
-			// Converts player string indexs to integers
+			// Converts player string indexes to integers
 			int index = Integer.parseInt(player.ID);
 			
 			// Creates result statement with the server
@@ -299,8 +301,13 @@ public class LaserTag implements ActionListener
     public JPanel createActionDisplay()
     {
         /******************************** Teams Panel ********************************/
+        redTeamBoxPanel = new JPanel();
+        greenTeamBoxPanel = new JPanel();
+        redTeamBoxPanel.setOpaque(false);
+        greenTeamBoxPanel.setOpaque(false);
+
         // Red team: Create panels, boxes, and labels
-        JPanel redTeam = new JPanel();
+        redTeamPanel = new JPanel();
         Box vboxRedTeam = Box.createVerticalBox();
         Box hboxRedTeam = Box.createHorizontalBox();
         JLabel redTitleLabel = new JLabel("RED TEAM");
@@ -312,20 +319,16 @@ public class LaserTag implements ActionListener
         hboxRedTeam.add(redTitleLabel);
         vboxRedTeam.add(hboxRedTeam);
         // set panel attributes
-        redTeam.setPreferredSize(new Dimension((int) (screenWidth/2.125), (screenHeight/2)));
-        redTeam.setBorder(BorderFactory.createLineBorder(Color.red));
-        redTeam.setOpaque(false);
-        redTeam.add(hboxRedTeam);
-        redTeam.add(vboxRedTeam);
-        // Loop to add player info as labels to team red team panel
-            // Import data
-            // Store data in label
-            // Format label
-            // Add label to box
+        redTeamPanel.setPreferredSize(new Dimension((int) (screenWidth/2.125), (screenHeight/2)));
+        redTeamPanel.setBorder(BorderFactory.createLineBorder(Color.red));
+        redTeamPanel.setOpaque(false);
+        //redTeamPanel.add(hboxRedTeam);
+        redTeamPanel.add(vboxRedTeam);
+        redTeamPanel.setLayout(new GridLayout(2, 1, 5, 0));
         
-
+            
         // Green team: Create panels, boxes, and labels
-        JPanel greenTeam = new JPanel();
+        greenTeamPanel = new JPanel();
         Box vboxGreenTeam = Box.createVerticalBox();
         Box hboxGreenTeam = Box.createHorizontalBox();
         JLabel greenTitleLabel = new JLabel("GREEN TEAM");
@@ -337,24 +340,19 @@ public class LaserTag implements ActionListener
         hboxGreenTeam.add(greenTitleLabel);
         vboxGreenTeam.add(hboxGreenTeam);
         // Set panel attributes
-        greenTeam.setPreferredSize(new Dimension((int) (screenWidth/2.125), (screenHeight/2)));
-        greenTeam.setBorder(BorderFactory.createLineBorder(Color.green));
-        greenTeam.setOpaque(false);
-        greenTeam.add(hboxGreenTeam);
-        greenTeam.add(vboxGreenTeam);
-        // Loop to add player info as labels to team green team panel
-            // Import data
-            // Store data in label
-            // Format label
-            // Add label to box
-
-
+        greenTeamPanel.setPreferredSize(new Dimension((int) (screenWidth/2.125), (screenHeight/2)));
+        greenTeamPanel.setBorder(BorderFactory.createLineBorder(Color.green));
+        greenTeamPanel.setOpaque(false);
+        //greenTeamPanel.add(hboxGreenTeam);
+        greenTeamPanel.add(vboxGreenTeam);
+        greenTeamPanel.setLayout(new GridLayout(2, 1, 5, 0));
+        
         // Create teamsPanel and add elements
         JPanel teamsPanel = new JPanel();
         teamsPanel.setOpaque(false);
-        teamsPanel.add(greenTeam);
-        teamsPanel.add(redTeam);
-
+        teamsPanel.add(redTeamPanel);
+        teamsPanel.add(greenTeamPanel);
+        
         /******************************** Game Panel ********************************/
         JLabel gameTitleLabel = new JLabel("GAME ACTION");
         gameTitleLabel.setFont(welcomeFont);
@@ -378,7 +376,7 @@ public class LaserTag implements ActionListener
         JPanel actionDisplayPanel = new JPanel();
         actionDisplayPanel.setLayout(new BorderLayout());
         actionDisplayPanel.setBackground(Color.darkGray);
-        actionDisplayPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
+        actionDisplayPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
         actionDisplayPanel.add(actionLabel, BorderLayout.NORTH);
         actionDisplayPanel.add(teamsPanel, BorderLayout.CENTER);
         actionDisplayPanel.add(gamePanel, BorderLayout.SOUTH);
@@ -406,6 +404,61 @@ public class LaserTag implements ActionListener
     public void changeCard()
     {
         cardLayout.show(cardPanel, "Panel 2");
+        addStuff();
+    }
+
+    // Method to add stuff to action display
+    public void addStuff()
+    {
+        Box vbox1 = Box.createVerticalBox();
+        Box vbox2 = Box.createVerticalBox();
+        
+        // Loop to add player info as labels to team red team panel
+        for(int i = 0; i < redPlayers.size(); i++)
+        {
+            // Create boxes, strings, and labels
+            Box hbox = Box.createHorizontalBox();
+            String id = redPlayers.get(i).getID();
+            String cn = redPlayers.get(i).getName();
+            JLabel idLabel = new JLabel(id);
+            idLabel.setForeground(Color.white);
+            idLabel.setFont(instructFont);
+            JLabel cnLabel = new JLabel(cn);
+            cnLabel.setForeground(Color.white);
+            cnLabel.setFont(instructFont);
+
+            // Add labels to boxes and boxes to redTeam panel
+            hbox.add(idLabel);
+            hbox.add(Box.createHorizontalStrut(20));
+            hbox.add(cnLabel);
+            vbox1.add(hbox);
+        }
+
+        // Loop to add player info as labels to team green team panel
+        for(int i = 0; i < greenPlayers.size(); i++)
+        {
+            // Create boxes, strings, and labels
+            Box hbox = Box.createHorizontalBox();
+            String id = greenPlayers.get(i).getID();
+            String cn = greenPlayers.get(i).getName();
+            JLabel idLabel = new JLabel(id);
+            idLabel.setForeground(Color.white);
+            idLabel.setFont(instructFont);
+            JLabel cnLabel = new JLabel(cn);
+            cnLabel.setForeground(Color.white);
+            cnLabel.setFont(instructFont);
+
+            // Add labels to boxes and boxes to greenTeam panel
+            hbox.add(idLabel);
+            hbox.add(Box.createHorizontalStrut(20));
+            hbox.add(cnLabel);
+            vbox2.add(hbox);
+        }
+
+        redTeamBoxPanel.add(vbox1);
+        greenTeamBoxPanel.add(vbox2);
+        redTeamPanel.add(redTeamBoxPanel);
+        greenTeamPanel.add(greenTeamBoxPanel);
     }
 
     // Method to create and add a horizontal box to a vertical box
@@ -516,7 +569,7 @@ public class LaserTag implements ActionListener
         java.util.Timer timer = new java.util.Timer();
         timer.scheduleAtFixedRate(new TimerTask() 
         {
-            int secondsRemaining = seconds;
+            int secondsRemaining = seconds + 1;
             public void run() 
             {
                 // If 
