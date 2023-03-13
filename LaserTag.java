@@ -106,10 +106,11 @@ public class LaserTag implements ActionListener
 			Statement test = connect.createStatement();
 			
 			// Prepares result set
-			ResultSet check = test.executeQuery("SELECT count(*) FROM player WHERE player.id = 845");
+			ResultSet check = test.executeQuery("SELECT count(*) FROM player WHERE player.id = " +  player.ID);
 			
 			while(check.next()){
 				//checks if player ID is taken
+				System.out.println(check.getInt(1));
 				if (check.getInt(1) == 0)
 				{
 					// Inserts player into database
