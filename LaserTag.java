@@ -95,6 +95,39 @@ public class LaserTag implements ActionListener
 		return conn;
 	}
     
+	// Method to insert players into database
+	private static void sqInsert(Connection connect, Player player)
+	{
+		try {
+			// Converts player string indexs to integers
+			int index = Integer.parseInt(player.ID);
+			
+			// Creates result statement with the server
+			Statement test = connect.createStatement();
+			
+			// Prepares result set
+			ResultSet check = test.executeQuery("SELECT count(*) FROM player WHERE player.id = 845");
+			
+			while(check.next()){
+				//checks if player ID is taken
+				if (check.getInt(1) == 0)
+				{
+					// Inserts player into database
+					PreparedStatement dbInsert = connect.prepareStatement("INSERT INTO player VALUES(?, ?, ?, ?)");
+					dbInsert.setInt(1, index);
+					dbInsert.setString(2, null);
+					dbInsert.setString(3, null);
+					dbInsert.setString(4, player.Name);
+
+					// Executes insert query
+					dbInsert.execute();
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace(System.err);
+		}
+	}
+	
     // Method to create splash screen
     public static JWindow createSplashScreen(JFrame frame) throws InterruptedException
     {
@@ -409,11 +442,22 @@ public class LaserTag implements ActionListener
     // Method for updating the players
     private void updateMethod()
     {
+		Connection conn = getConnection();
         //loop through players and call update methods
         for (int i = 0; i < redPlayers.size(); i++)
+		{
             redPlayers.get(i).update();
+			// Updates red players in database
+			if (redPlayers.get(i).getID().isEmpty() !=  true)
+				sqInsert(conn, redPlayers.get(i));
+		}
         for (int i = 0; i < greenPlayers.size(); i++)
+		{
             greenPlayers.get(i).update();
+			// Updates green players in database
+			if (greenPlayers.get(i).getID().isEmpty() !=  true)
+				sqInsert(conn, redPlayers.get(i));
+		}
     }
 
     public void pressedKey(JFrame frame)
