@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.util.*;
+import java.net.*;
 
 public class LaserTag implements ActionListener 
 {
@@ -11,6 +12,8 @@ public class LaserTag implements ActionListener
     private JTextField textField;
     private JTextField textFieldID;
     private JTextField textFieldName;
+    private int redScore;
+    private int greenScore;
 
     // Card Variables
     private JPanel cardPanel;
@@ -52,6 +55,8 @@ public class LaserTag implements ActionListener
         this.textFieldName = textFieldName;
         this.redPlayers = redTeam;
         this.greenPlayers = greenTeam;
+        this.redScore = 0;
+        this.greenScore = 0;
     }
 
     //MAIN FUNCTION ============================================================================
@@ -310,7 +315,7 @@ public class LaserTag implements ActionListener
         redTeamPanel = new JPanel();
         Box vboxRedTeam = Box.createVerticalBox();
         Box hboxRedTeam = Box.createHorizontalBox();
-        JLabel redTitleLabel = new JLabel("RED TEAM");
+        JLabel redTitleLabel = new JLabel("RED TEAM: " + redScore);
         // Set label attributes
         redTitleLabel.setFont(welcomeFont);
         redTitleLabel.setForeground(Color.red);
@@ -331,7 +336,7 @@ public class LaserTag implements ActionListener
         greenTeamPanel = new JPanel();
         Box vboxGreenTeam = Box.createVerticalBox();
         Box hboxGreenTeam = Box.createHorizontalBox();
-        JLabel greenTitleLabel = new JLabel("GREEN TEAM");
+        JLabel greenTitleLabel = new JLabel("GREEN TEAM: " + greenScore);
         // Set label attributes
         greenTitleLabel.setFont(welcomeFont);
         greenTitleLabel.setForeground(Color.green);
