@@ -2,8 +2,10 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.net.*;
 
 public class LaserTag implements ActionListener 
 {
@@ -11,6 +13,9 @@ public class LaserTag implements ActionListener
     private JTextField textField;
     private JTextField textFieldID;
     private JTextField textFieldName;
+    private DatagramSocket socket;
+    private int redScore;
+    private int greenScore;
 
     // Card Variables
     private JPanel cardPanel;
@@ -52,6 +57,16 @@ public class LaserTag implements ActionListener
         this.textFieldName = textFieldName;
         this.redPlayers = redTeam;
         this.greenPlayers = greenTeam;
+        this.redScore = 0;
+        this.greenScore = 0;
+
+        try{
+            this.socket = new DatagramSocket(7501);
+        } catch (SocketException e){
+            System.out.println(e.getMessage());
+        }
+        
+    
     }
 
     //MAIN FUNCTION ============================================================================
@@ -81,10 +96,72 @@ public class LaserTag implements ActionListener
 
         //Show frame
         frame.setVisible(true);
+
+        //Create UDP Socket to take input from traffic generator
+        laserTag.getTraffic();
+        
     }
 
     // METHODS =================================================================================================
-    // Method that connects to server and returns connection
+    public void getTraffic() 
+    {
+        byte[] buffer = new byte[1024];
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+        while (true) 
+        {   
+            try{
+                //take in message from traffic generator in format "playerID:otherPlayerID"
+                socket.receive(packet);
+                String gameEvent = new String(packet.getData(), 0, packet.getLength());
+
+                System.out.println(gameEvent);
+                //call function to process message
+                handleTraffic(gameEvent);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }   
+    
+  // Method that processes message from traffic generator
+  public void handleTraffic(String event){
+
+    //extract player IDs from the packet sent from traffic generator
+    String[] parts = event.split(":");
+
+    String shootingPlayerID = (parts[0]);
+    String shotPlayerID = (parts[1]);
+    System.out.println(shootingPlayerID + " blasted " + shotPlayerID);
+
+    //search players with shootingPlayerID, adding tend points to player and team when found
+    for(int i = 0; i < greenPlayers.size(); i++)
+        {
+            if (greenPlayers.get(i).getID() == null){
+                System.out.println("not a player");
+            }
+            else if(greenPlayers.get(i).getID().equals(shootingPlayerID)){
+                greenPlayers.get(i).score();
+                this.greenScore += 10;
+            }
+        }
+    for(int i = 0; i < redPlayers.size(); i++)
+    {
+        if (redPlayers.get(i).getID() == null){
+            System.out.println("not a player");
+        }
+        else if(redPlayers.get(i).getID().equals(shootingPlayerID)){
+            redPlayers.get(i).score();
+            this.redScore += 10;
+        }
+    }
+    System.out.println("Red Team Score: " + redScore);
+    System.out.println("Green Team Score: " + greenScore);
+
+  }
+
+  // Method that connects to server and returns connection
 	public static Connection getConnection() {
         Connection conn = null;
 		String url = "jdbc:postgresql://ec2-54-86-224-85.compute-1.amazonaws.com:5432/d7o8d02lik98h5?sslmode=require&user=uyxzxuqnymgnca&password=28ac4c9bcc607991c066ccdcb5bc72e1fac7f43dc34d02d0dd68262bc29db8a1";
@@ -310,7 +387,7 @@ public class LaserTag implements ActionListener
         redTeamPanel = new JPanel();
         Box vboxRedTeam = Box.createVerticalBox();
         Box hboxRedTeam = Box.createHorizontalBox();
-        JLabel redTitleLabel = new JLabel("RED TEAM");
+        JLabel redTitleLabel = new JLabel("RED TEAM: " + redScore);
         // Set label attributes
         redTitleLabel.setFont(welcomeFont);
         redTitleLabel.setForeground(Color.red);
@@ -331,7 +408,7 @@ public class LaserTag implements ActionListener
         greenTeamPanel = new JPanel();
         Box vboxGreenTeam = Box.createVerticalBox();
         Box hboxGreenTeam = Box.createHorizontalBox();
-        JLabel greenTitleLabel = new JLabel("GREEN TEAM");
+        JLabel greenTitleLabel = new JLabel("GREEN TEAM: " + greenScore);
         // Set label attributes
         greenTitleLabel.setFont(welcomeFont);
         greenTitleLabel.setForeground(Color.green);
@@ -522,6 +599,7 @@ public class LaserTag implements ActionListener
     private void updateMethod()
     {
 		Connection conn = getConnection();
+        System.out.println("test");
         //loop through players and call update methods
         for (int i = 0; i < redPlayers.size(); i++)
 		{
@@ -557,8 +635,9 @@ public class LaserTag implements ActionListener
     // Method for when button is pressed
     public void buttonMethod()
     {
+        //System.out.println("pressed");
+        //updateMethod();
         countdownTimer(playerEntrySeconds, playerEntryPhrase);
-        updateMethod();
         printTeams();
     }
 
