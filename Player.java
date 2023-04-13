@@ -45,7 +45,7 @@ public class Player
 
     public void update(){
         this.ID = textFieldID.getText();
-        this.Name =textFieldName.getText();
+        this.Name = textFieldName.getText();
 
     }
 
@@ -72,6 +72,17 @@ public class Player
     public void setTeamColor(String teamcolor)
     {
         this.teamColor = teamcolor;
+    }
+
+    public void score()
+    {
+        this.totalScore += 10;
+        System.out.println("Score!");
+    }
+
+    public int getScore()
+    {
+        return totalScore;
     }
 
     public JTextField getTextFieldName()
