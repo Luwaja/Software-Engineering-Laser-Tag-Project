@@ -19,7 +19,7 @@ Sprint 4 🆕
 
 =============================Instructions=============================
 1. Download the postgresql JDBC driver located here: https://jdbc.postgresql.org/download/ and place it the folder
-2. Download the WAV files of the provided audio tracks here: https://drive.google.com/drive/folders/143YStrufI2cf6j4u38x3QSyIjS0c_3ph?usp=sharing
+2. Download the WAV files of the provided audio tracks here: [https://drive.google.com/drive/folders/143YStrufI2cf6j4u38x3QSyIjS0c_3ph?usp=sharing](https://drive.google.com/drive/folders/1TAvFLPZl094ZI7TIoqPCADasEc_0conr?usp=sharing)
 3. Manually load the driver with the program, this is done with the following commands:
     1. javac LasaerTag.java Player.java
     2. java -cp "PATH TO YOUR FOLDER\postgres-42.5.4.jar;PATH TO YOUR FOLDER" LaserTag
