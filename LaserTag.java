@@ -1,29 +1,26 @@
-// LaserTag.java
-// Function: Does everything right now
-
 // Imports
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.util.*;
+import java.net.*;
 import java.io.*;
-import javax.sound.sampled.*;
-
+ import javax.sound.sampled.*;
 
 public class LaserTag implements ActionListener 
 {
-    // Class instances
-    // Graphics = graphics;
-    
     // Variables
     private JTextField textField;
     private JTextField textFieldID;
     private JTextField textFieldName;
-    // Card variables
+    private DatagramSocket socket;
+    private int redScore;
+    private int greenScore;
+
+    // Card Variables
     private JPanel cardPanel;
     private CardLayout cardLayout;
-    // Team variables
     private JPanel redTeamPanel;
     private JPanel greenTeamPanel;
     private JPanel redTeamBoxPanel;
@@ -48,7 +45,7 @@ public class LaserTag implements ActionListener
     private String playerEntryPhrase = "Starting the game in:";
     private int actionDisplaySeconds = 360;
     private String actionDisplayPhrase = "Time left in the game:";
-
+    
     // Fonts
     final private static Font welcomeFont = new Font("Dialog", Font.BOLD, 40); // Welcome label
     final private static Font instructFont = new Font("Dialog", Font.PLAIN, 20); // Instruction label
@@ -62,6 +59,16 @@ public class LaserTag implements ActionListener
         this.textFieldName = textFieldName;
         this.redPlayers = redTeam;
         this.greenPlayers = greenTeam;
+        this.redScore = 0;
+        this.greenScore = 0;
+
+        try{
+            this.socket = new DatagramSocket(7501);
+        } catch (SocketException e){
+            System.out.println(e.getMessage());
+        }
+        
+    
     }
 
     //MAIN FUNCTION ============================================================================
@@ -91,10 +98,74 @@ public class LaserTag implements ActionListener
 
         //Show frame
         frame.setVisible(true);
+
+        //Create UDP Socket to take input from traffic generator
+        laserTag.getTraffic();
+        
     }
 
     // METHODS =================================================================================================
-    // Method that connects to server and returns connection
+    public void getTraffic() 
+    {
+        byte[] buffer = new byte[1024];
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+        while (true) 
+        {   
+            try{
+                //take in message from traffic generator in format "playerID:otherPlayerID"
+                socket.receive(packet);
+                String gameEvent = new String(packet.getData(), 0, packet.getLength());
+
+                System.out.println(gameEvent);
+                //call function to process message
+                handleTraffic(gameEvent);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }   
+    
+  // Method that processes message from traffic generator
+  public void handleTraffic(String event){
+
+    //extract player IDs from the packet sent from traffic generator
+    String[] parts = event.split(":");
+
+    String shootingPlayerID = (parts[0]);
+    String shotPlayerID = (parts[1]);
+    String shootingPlayerName;
+    String shotPlayerName;
+    System.out.println(shootingPlayerID + " blasted " + shotPlayerID);
+
+    //search players with shootingPlayerID, adding tend points to player and team when found
+    for(int i = 0; i < greenPlayers.size(); i++)
+        {
+            if (greenPlayers.get(i).getID() == null){
+                System.out.println("not a player");
+            }
+            else if(greenPlayers.get(i).getID().equals(shootingPlayerID)){
+                greenPlayers.get(i).score();
+                this.greenScore += 10;
+            }
+        }
+    for(int i = 0; i < redPlayers.size(); i++)
+    {
+        if (redPlayers.get(i).getID() == null){
+            System.out.println("not a player");
+        }
+        else if(redPlayers.get(i).getID().equals(shootingPlayerID)){
+            redPlayers.get(i).score();
+            this.redScore += 10;
+        }
+    }
+    System.out.println("Red Team Score: " + redScore);
+    System.out.println("Green Team Score: " + greenScore);
+
+  }
+
+  // Method that connects to server and returns connection
 	public static Connection getConnection() {
         Connection conn = null;
 		String url = "jdbc:postgresql://ec2-54-86-224-85.compute-1.amazonaws.com:5432/d7o8d02lik98h5?sslmode=require&user=uyxzxuqnymgnca&password=28ac4c9bcc607991c066ccdcb5bc72e1fac7f43dc34d02d0dd68262bc29db8a1";
@@ -253,7 +324,6 @@ public class LaserTag implements ActionListener
 
         // Create playerEntryPanel
         JPanel boxesPanel = new JPanel();
-        //boxesPanel.setPreferredSize(new Dimension((screenWidth/2), (screenHeight/2)));
         boxesPanel.setOpaque(false);
         boxesPanel.add(redTeamPanel);
         boxesPanel.add(hboxStrut);
@@ -261,10 +331,10 @@ public class LaserTag implements ActionListener
 
         /******************************** Button Panel ********************************/
         // Create timerLabel and timerPanel
-        entryTimerLabel = new JLabel("");
-        entryTimerLabel.setFont(timerFont); // Set fonts
-        entryTimerLabel.setForeground(Color.white); // Set text color
-        entryTimerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+         entryTimerLabel = new JLabel("");
+         entryTimerLabel.setFont(timerFont); // Set fonts
+         entryTimerLabel.setForeground(Color.white); // Set text color
+         entryTimerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         JPanel timerPanel = new JPanel();
         timerPanel.add(entryTimerLabel);
         timerPanel.setOpaque(false);
@@ -310,17 +380,16 @@ public class LaserTag implements ActionListener
     // Method to create actionDisplayPanel
     public JPanel createActionDisplay()
     {
+
         /******************************** Timer Panel ********************************/
-        // Create timerLabel and timerPanel
-        gameTimerLabel = new JLabel("Time left in the game:");
-        gameTimerLabel.setFont(timerFont); // Set fonts
-        gameTimerLabel.setForeground(Color.white); // Set text color
-        gameTimerLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        JPanel gameTimerPanel = new JPanel();
-        gameTimerPanel.add(gameTimerLabel);
-        gameTimerPanel.setOpaque(false);
-        
-        
+         // Create timerLabel and timerPanel
+         gameTimerLabel = new JLabel("Time left in the game:");
+         gameTimerLabel.setFont(timerFont); // Set fonts
+         gameTimerLabel.setForeground(Color.white); // Set text color
+         gameTimerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+         JPanel gameTimerPanel = new JPanel();
+         gameTimerPanel.add(gameTimerLabel);
+         gameTimerPanel.setOpaque(false);
         /******************************** Teams Panel ********************************/
         redTeamBoxPanel = new JPanel();
         greenTeamBoxPanel = new JPanel();
@@ -331,7 +400,7 @@ public class LaserTag implements ActionListener
         redTeamPanel = new JPanel();
         Box vboxRedTeam = Box.createVerticalBox();
         Box hboxRedTeam = Box.createHorizontalBox();
-        JLabel redTitleLabel = new JLabel("RED TEAM");
+        JLabel redTitleLabel = new JLabel("RED TEAM: " + redScore);
         // Set label attributes
         redTitleLabel.setFont(welcomeFont);
         redTitleLabel.setForeground(Color.red);
@@ -352,11 +421,12 @@ public class LaserTag implements ActionListener
         greenTeamPanel = new JPanel();
         Box vboxGreenTeam = Box.createVerticalBox();
         Box hboxGreenTeam = Box.createHorizontalBox();
-        JLabel greenTitleLabel = new JLabel("GREEN TEAM");
+        JLabel greenTitleLabel = new JLabel("GREEN TEAM: " + greenScore);
         // Set label attributes
         greenTitleLabel.setFont(welcomeFont);
         greenTitleLabel.setForeground(Color.green);
         greenTitleLabel.setHorizontalAlignment(SwingConstants.LEFT); // Not working for some reason
+
         // Boxes
         hboxGreenTeam.add(greenTitleLabel);
         vboxGreenTeam.add(hboxGreenTeam);
@@ -402,9 +472,13 @@ public class LaserTag implements ActionListener
         actionDisplayPanel.add(actionLabel, BorderLayout.CENTER);
         actionDisplayPanel.add(teamsPanel, BorderLayout.CENTER);
         actionDisplayPanel.add(gamePanel, BorderLayout.SOUTH);
+
+        //update team scores in labels and make the highest one flash
+        teamScoreUpdate(redTitleLabel, greenTitleLabel);
         
         return actionDisplayPanel;
     }
+
 
     public void AudioPlayer() 
     {
@@ -412,7 +486,7 @@ public class LaserTag implements ActionListener
             Random random = new Random();
             int randomNumber = random.nextInt(8) + 1;
             System.out.println("Playing Track0" + randomNumber + ".wav");
-            
+
             String filePath = "Audio Tracks/Track0" + randomNumber + ".wav";
             AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(filePath).getAbsoluteFile());
             Clip clip = AudioSystem.getClip();
@@ -422,6 +496,7 @@ public class LaserTag implements ActionListener
             e.printStackTrace();
         }
     }
+
 
     // Set panels from layout to card panel and add to frame
     public void setLayout(JFrame frame, JPanel playerEntryPanel, JPanel actionDisplayPanel)
@@ -501,7 +576,6 @@ public class LaserTag implements ActionListener
         greenTeamPanel.add(greenTeamBoxPanel);
     }
 
-
     // Method to create and add a horizontal box to a vertical box
     private static JTextField[] addHorizontalBox(Box vbox, String labelTextID, String labelTextName, ArrayList<Player> redPlayers, ArrayList<Player> greenPlayers)
     {
@@ -563,6 +637,7 @@ public class LaserTag implements ActionListener
     private void updateMethod()
     {
 		Connection conn = getConnection();
+        System.out.println("test");
         //loop through players and call update methods
         for (int i = 0; i < redPlayers.size(); i++)
 		{
@@ -603,6 +678,57 @@ public class LaserTag implements ActionListener
         updateMethod();
     }
 
+    public void teamScoreUpdate(JLabel redTeamLabel, JLabel greenTeamLabel)
+    {
+            Thread thread = new Thread(() -> {
+            while (true) {
+                // Update the score of the red team label
+                redTeamLabel.setText("Red Team: " + redScore);
+
+                // Update the text of the green label
+                greenTeamLabel.setText("Green Team: " + greenScore);
+
+                //determine the highest score and call the flashing function for that team label
+                if (redScore > greenScore){
+                    highScoreFlash(redTeamLabel);
+                }
+                if (greenScore > redScore){
+                    highScoreFlash(greenTeamLabel);
+                }
+                try {
+                    //updates every 100 ms
+                    Thread.sleep(100); 
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }     
+        });
+
+        thread.start(); // Start the thread to update the labels
+    }
+
+    public void highScoreFlash(JLabel label) {
+         final javax.swing.Timer[] flashTimer = {null};
+         flashTimer[0] = new javax.swing.Timer(50, new ActionListener() {
+            boolean visible = true;
+    
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                visible = !visible;
+                label.setVisible(visible);
+
+                if (redScore == greenScore){
+                    label.setVisible(true);
+                    flashTimer[0].stop();
+                }
+
+            }
+        });
+    
+        flashTimer[0].start();
+ 
+    }
+
     // Method that creates a countdown timer for the player entry screen
     public void playerEntryTimer(int seconds, String phrase)
     {
@@ -613,7 +739,6 @@ public class LaserTag implements ActionListener
             int secondsRemaining = seconds + 1;
             public void run() 
             {
-                // If 
                 if (secondsRemaining > 0) 
                 {
                     secondsRemaining--;
@@ -627,7 +752,6 @@ public class LaserTag implements ActionListener
         }, timerDelay, timerPeriod);
     }
 
-    // Method that creates a countdown timer for the action display screen
     public void actionDisplayTimer(int seconds, String phrase)
     {
         // Create timer to run at a fixed rate specified by delay and period
@@ -692,4 +816,5 @@ public class LaserTag implements ActionListener
             }
         }
 	}
+
 }
