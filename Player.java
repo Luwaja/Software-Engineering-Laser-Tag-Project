@@ -40,13 +40,36 @@ public class Player
             @Override
             public void keyReleased(KeyEvent e) {}
         });
+        // Add a key listener to the textFieldName
+        this.textFieldName.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {}
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    // Set the ID attribute to the value entered in the textFieldName
+                    ID = textFieldID.getText();
+                    Name = textFieldName.getText();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {}
+        });
 
     }
 
-    public void update(){
+    public void update()
+    {
         this.ID = textFieldID.getText();
         this.Name = textFieldName.getText();
+    }
 
+    public void score()
+    {
+        this.totalScore += 10;
+        System.out.println("Score for " + Name + "!");
     }
 
     public void setTextFieldName(JTextField textFieldName)
@@ -72,12 +95,6 @@ public class Player
     public void setTeamColor(String teamcolor)
     {
         this.teamColor = teamcolor;
-    }
-
-    public void score()
-    {
-        this.totalScore += 10;
-        System.out.println("Score!");
     }
 
     public JTextField getTextFieldName()
