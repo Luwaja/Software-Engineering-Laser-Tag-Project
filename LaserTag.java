@@ -17,6 +17,7 @@ public class LaserTag implements ActionListener
     private DatagramSocket socket;
     private int redScore;
     private int greenScore;
+    private JLabel gameTitleLabel;
 
     // Card Variables
     private JPanel cardPanel;
@@ -25,6 +26,9 @@ public class LaserTag implements ActionListener
     private JPanel greenTeamPanel;
     private JPanel redTeamBoxPanel;
     private JPanel greenTeamBoxPanel;
+    private JPanel gamePanel;
+    private JPanel actionDisplayPanel;
+
     
     // Team player names
     private static ArrayList<Player> redPlayers = new ArrayList<Player>();
@@ -137,7 +141,8 @@ public class LaserTag implements ActionListener
     String shotPlayerID = (parts[1]);
     String shootingPlayerName;
     String shotPlayerName;
-    System.out.println(shootingPlayerID + " blasted " + shotPlayerID);
+    String fshot = shootingPlayerID + " blasted " + shotPlayerID;
+    System.out.println(fshot);
 
     //search players with shootingPlayerID, adding tend points to player and team when found
     for(int i = 0; i < greenPlayers.size(); i++)
@@ -148,6 +153,7 @@ public class LaserTag implements ActionListener
             else if(greenPlayers.get(i).getID().equals(shootingPlayerID)){
                 greenPlayers.get(i).score();
                 this.greenScore += 10;
+                printGameAction(fshot);
             }
         }
     for(int i = 0; i < redPlayers.size(); i++)
@@ -158,6 +164,7 @@ public class LaserTag implements ActionListener
         else if(redPlayers.get(i).getID().equals(shootingPlayerID)){
             redPlayers.get(i).score();
             this.redScore += 10;
+            printGameAction(fshot);
         }
     }
     System.out.println("Red Team Score: " + redScore);
@@ -444,13 +451,13 @@ public class LaserTag implements ActionListener
         teamsPanel.add(greenTeamPanel);
         
         /******************************** Game Panel ********************************/
-        JLabel gameTitleLabel = new JLabel("GAME ACTION");
+        gameTitleLabel = new JLabel("GAME ACTION");
         gameTitleLabel.setFont(welcomeFont);
         gameTitleLabel.setForeground(Color.white);
         gameTitleLabel.setHorizontalAlignment(SwingConstants.LEFT);
 
         // Create gamePanel and add elements
-        JPanel gamePanel = new JPanel();
+        gamePanel = new JPanel();
         gamePanel.setPreferredSize(new Dimension((screenWidth/2), (int) (screenHeight/3.25)));
         gamePanel.setBorder(BorderFactory.createLineBorder(Color.white));
         gamePanel.setOpaque(false);
@@ -463,7 +470,7 @@ public class LaserTag implements ActionListener
         actionLabel.setHorizontalAlignment(SwingConstants.CENTER);
         
         // Create actionDisplayPanel and add elements
-        JPanel actionDisplayPanel = new JPanel();
+        actionDisplayPanel = new JPanel();
         actionDisplayPanel.setLayout(new BorderLayout());
         actionDisplayPanel.setBackground(Color.darkGray);
         actionDisplayPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
@@ -537,13 +544,13 @@ public class LaserTag implements ActionListener
             if (id == null)
                 continue;
             Box hbox = Box.createHorizontalBox();
-            JLabel idLabel = new JLabel(id);
+            JLabel idLabel = new JLabel("ID: " + id);
             idLabel.setForeground(Color.white);
             idLabel.setFont(instructFont);
-            JLabel cnLabel = new JLabel(cn);
+            JLabel cnLabel = new JLabel("Codename: " + cn);
             cnLabel.setForeground(Color.white);
             cnLabel.setFont(instructFont);
-            JLabel scoreLabel = new JLabel(String.valueOf(score));
+            JLabel scoreLabel = new JLabel("Score: " + String.valueOf(score));
             scoreLabel.setForeground(Color.white);
             scoreLabel.setFont(instructFont);
 
@@ -568,13 +575,13 @@ public class LaserTag implements ActionListener
             if (id == null)
                 continue;
             Box hbox = Box.createHorizontalBox();
-            JLabel idLabel = new JLabel(id);
+            JLabel idLabel = new JLabel("ID: " + id);
             idLabel.setForeground(Color.white);
             idLabel.setFont(instructFont);
-            JLabel cnLabel = new JLabel(cn);
+            JLabel cnLabel = new JLabel("Codename: " + cn);
             cnLabel.setForeground(Color.white);
             cnLabel.setFont(instructFont);
-            JLabel scoreLabel = new JLabel(String.valueOf(score));
+            JLabel scoreLabel = new JLabel("Score: " + String.valueOf(score));
             scoreLabel.setForeground(Color.white);
             scoreLabel.setFont(instructFont);
 
@@ -768,6 +775,40 @@ public class LaserTag implements ActionListener
     
         flashTimer[0].start();
  
+    }
+
+    private JLabel[] labels = new JLabel[5];
+    private Box vbox = Box.createVerticalBox();
+
+    public void printGameAction(String actionout) {
+        JLabel newLabel = new JLabel(actionout);
+        newLabel.setForeground(Color.white);
+        newLabel.setFont(instructFont);
+
+        // Shift the remaining labels up in the array
+        for (int i = 0; i < labels.length - 1; i++) {
+            labels[i] = labels[i+1];
+        }
+
+        // Add the new label to the end of the array
+        labels[labels.length - 1] = newLabel;
+
+        vbox.removeAll();
+        for (int i = 0; i < labels.length; i++) {
+            if (labels[i] != null) {
+                vbox.add(labels[i]);
+                vbox.add(Box.createVerticalStrut(10));
+            }
+        }
+
+        // Add the vbox to the game panel
+        gamePanel.removeAll();
+        gamePanel.setLayout(new BorderLayout());
+        gamePanel.add(gameTitleLabel, BorderLayout.NORTH);
+        gamePanel.add(vbox, BorderLayout.CENTER);
+
+        gamePanel.revalidate();
+        gamePanel.repaint();
     }
 
     // Method that creates a countdown timer for the player entry screen
