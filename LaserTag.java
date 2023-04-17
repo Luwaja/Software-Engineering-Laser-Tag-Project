@@ -380,7 +380,6 @@ public class LaserTag implements ActionListener
     // Method to create actionDisplayPanel
     public JPanel createActionDisplay()
     {
-
         /******************************** Timer Panel ********************************/
          // Create timerLabel and timerPanel
          gameTimerLabel = new JLabel("Time left in the game:");
@@ -473,7 +472,7 @@ public class LaserTag implements ActionListener
         actionDisplayPanel.add(teamsPanel, BorderLayout.CENTER);
         actionDisplayPanel.add(gamePanel, BorderLayout.SOUTH);
 
-        //update team scores in labels and make the highest one flash
+        // update team scores in labels and make the highest one flash
         teamScoreUpdate(redTitleLabel, greenTitleLabel);
         
         return actionDisplayPanel;
@@ -532,20 +531,28 @@ public class LaserTag implements ActionListener
         for(int i = 0; i < redPlayers.size(); i++)
         {
             // Create boxes, strings, and labels
-            Box hbox = Box.createHorizontalBox();
             String id = redPlayers.get(i).getID();
             String cn = redPlayers.get(i).getName();
+            int score = redPlayers.get(i).getTotalScore();
+            if (id == null)
+                continue;
+            Box hbox = Box.createHorizontalBox();
             JLabel idLabel = new JLabel(id);
             idLabel.setForeground(Color.white);
             idLabel.setFont(instructFont);
             JLabel cnLabel = new JLabel(cn);
             cnLabel.setForeground(Color.white);
             cnLabel.setFont(instructFont);
+            JLabel scoreLabel = new JLabel(String.valueOf(score));
+            scoreLabel.setForeground(Color.white);
+            scoreLabel.setFont(instructFont);
 
             // Add labels to boxes and boxes to redTeam panel
             hbox.add(idLabel);
             hbox.add(Box.createHorizontalStrut(20));
             hbox.add(cnLabel);
+            hbox.add(Box.createHorizontalStrut(20));
+            hbox.add(scoreLabel);
             vbox1.add(hbox);
         }
 
@@ -553,20 +560,28 @@ public class LaserTag implements ActionListener
         for(int i = 0; i < greenPlayers.size(); i++)
         {
             // Create boxes, strings, and labels
-            Box hbox = Box.createHorizontalBox();
             String id = greenPlayers.get(i).getID();
             String cn = greenPlayers.get(i).getName();
+            int score = greenPlayers.get(i).getTotalScore();
+            if (id == null)
+                continue;
+            Box hbox = Box.createHorizontalBox();
             JLabel idLabel = new JLabel(id);
             idLabel.setForeground(Color.white);
             idLabel.setFont(instructFont);
             JLabel cnLabel = new JLabel(cn);
             cnLabel.setForeground(Color.white);
             cnLabel.setFont(instructFont);
+            JLabel scoreLabel = new JLabel(String.valueOf(score));
+            scoreLabel.setForeground(Color.white);
+            scoreLabel.setFont(instructFont);
 
             // Add labels to boxes and boxes to greenTeam panel
             hbox.add(idLabel);
             hbox.add(Box.createHorizontalStrut(20));
             hbox.add(cnLabel);
+            hbox.add(Box.createHorizontalStrut(20));
+            hbox.add(scoreLabel);
             vbox2.add(hbox);
         }
 
@@ -805,16 +820,15 @@ public class LaserTag implements ActionListener
     // ACTION PERFORMED =========================================================================================================
     public void actionPerformed(ActionEvent e)
 	{
-        if (e.getSource() == textField) 
-        {
-            if (e.getSource() == textFieldID) 
-            {
+        // if (e.getSource() == textField) 
+        // {
+            // if (e.getSource() == textFieldID) 
+            // {
                 // Handle the event triggered by the Enter key being pressed
-                String text = textFieldID.getText();
-                System.out.println(" * enter key has been pressed...  ");
-
-            }
-        }
+                // String text = textFieldID.getText();
+                // System.out.println(" * enter key has been pressed...  ");
+            // }
+        // }
 	}
 
 }
