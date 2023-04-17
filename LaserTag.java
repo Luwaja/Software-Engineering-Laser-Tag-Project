@@ -677,7 +677,7 @@ public class LaserTag implements ActionListener
 
 
     private JLabel[] labels = new JLabel[5];
-    private Box hbox = Box.createVerticalBox();
+    private Box vbox = Box.createVerticalBox();
 
     public void printGameAction(String actionout) {
         JLabel newLabel = new JLabel(actionout);
@@ -692,19 +692,19 @@ public class LaserTag implements ActionListener
         // Add the new label to the end of the array
         labels[labels.length - 1] = newLabel;
 
-        hbox.removeAll();
+        vbox.removeAll();
         for (int i = 0; i < labels.length; i++) {
             if (labels[i] != null) {
-                hbox.add(labels[i]);
-                hbox.add(Box.createVerticalStrut(10)); 
+                vbox.add(labels[i]);
+                vbox.add(Box.createVerticalStrut(10));
             }
         }
 
-        // Add the hbox to the game panel
+        // Add the vbox to the game panel
         gamePanel.removeAll();
         gamePanel.setLayout(new BorderLayout());
         gamePanel.add(gameTitleLabel, BorderLayout.NORTH);
-        gamePanel.add(hbox, BorderLayout.CENTER);
+        gamePanel.add(vbox, BorderLayout.CENTER);
 
         gamePanel.revalidate();
         gamePanel.repaint();
