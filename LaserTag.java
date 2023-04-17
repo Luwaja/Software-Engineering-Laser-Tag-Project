@@ -553,6 +553,8 @@ public class LaserTag implements ActionListener
             hbox.add(cnLabel);
             hbox.add(Box.createHorizontalStrut(20));
             hbox.add(scoreLabel);
+            //call method that updates scores
+            updateRedScores(scoreLabel, i);
             vbox1.add(hbox);
         }
 
@@ -582,6 +584,8 @@ public class LaserTag implements ActionListener
             hbox.add(cnLabel);
             hbox.add(Box.createHorizontalStrut(20));
             hbox.add(scoreLabel);
+            //call method that updates scores
+            updateGreenScores(scoreLabel, i);
             vbox2.add(hbox);
         }
 
@@ -589,6 +593,28 @@ public class LaserTag implements ActionListener
         greenTeamBoxPanel.add(vbox2);
         redTeamPanel.add(redTeamBoxPanel);
         greenTeamPanel.add(greenTeamBoxPanel);
+    }
+
+    public void updateRedScores(JLabel scoreLabel, int i){
+        javax.swing.Timer timer = new javax.swing.Timer(100, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Update the text of the label here
+                scoreLabel.setText(String.valueOf(redPlayers.get(i).getTotalScore()));
+            }
+        });
+        timer.start();
+    }
+
+    public void updateGreenScores(JLabel scoreLabel, int i){
+        javax.swing.Timer timer = new javax.swing.Timer(100, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Update the text of the label here
+                scoreLabel.setText(String.valueOf(greenPlayers.get(i).getTotalScore()));
+            }
+        });
+        timer.start();
     }
 
     // Method to create and add a horizontal box to a vertical box
