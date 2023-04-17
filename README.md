@@ -19,10 +19,10 @@ Sprint 4 🆕
 
 =============================Instructions=============================
 1. Download the postgresql JDBC driver located here: https://jdbc.postgresql.org/download/ and place it the folder
-2. Download the WAV files of the provided audio tracks here: [https://drive.google.com/drive/folders/143YStrufI2cf6j4u38x3QSyIjS0c_3ph?usp=sharing](https://drive.google.com/drive/folders/1TAvFLPZl094ZI7TIoqPCADasEc_0conr?usp=sharing)
+2. Download the "Audio Tracks" folder specifically that holds the WAV files of the provided audio tracks here: [https://drive.google.com/drive/folders/143YStrufI2cf6j4u38x3QSyIjS0c_3ph?usp=sharing](https://drive.google.com/drive/folders/1TAvFLPZl094ZI7TIoqPCADasEc_0conr?usp=sharing)
 3. Manually load the driver with the program, this is done with the following commands:
     1. javac LasaerTag.java Player.java
     2. java -cp "PATH TO YOUR FOLDER\postgres-42.5.4.jar;PATH TO YOUR FOLDER" LaserTag
 3. Enter a player ID into the ID textbox and the given code name, once filled out press start game or hit f5 for the program to insert its values in the  database.
 4. NOTE: if you want a fresh experience the database reset button must be hit in heroku.
-5. Wait for the start up countdodwn and Boom. Gaming time.
+5. Wait for the start up countdown and Boom. Gaming time.
