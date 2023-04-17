@@ -461,8 +461,8 @@ public class LaserTag implements ActionListener
         actionDisplayPanel.add(teamsPanel, BorderLayout.CENTER);
         actionDisplayPanel.add(gamePanel, BorderLayout.SOUTH);
 
-        //update team scores in labels
-        teamScoreUpdate(greenTitleLabel, redTitleLabel);
+        //update team scores in labels and make the highest one flash
+        teamScoreUpdate(redTitleLabel, greenTitleLabel);
         
         return actionDisplayPanel;
     }
@@ -657,18 +657,48 @@ public class LaserTag implements ActionListener
                 // Update the text of the green label
                 greenTeamLabel.setText("Green Team: " + greenScore);
 
+                //determine the highest score and call the flashing function for that team label
+                //final javax.swing.Timer flashTimer;
+
+                if (redScore > greenScore){
+                    highScoreFlash(redTeamLabel);
+                }
+                if (greenScore > redScore){
+                    highScoreFlash(greenTeamLabel);
+                }
                 try {
                     //updates every second
                     Thread.sleep(1000); 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }
+            }     
         });
 
         thread.start(); // Start the thread to update the labels
     }
 
+    public void highScoreFlash(JLabel label) {
+         final javax.swing.Timer[] flashTimer = {null};
+         flashTimer[0] = new javax.swing.Timer(50, new ActionListener() {
+            boolean visible = true;
+    
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                visible = !visible;
+                label.setVisible(visible);
+
+                if (redScore == greenScore){
+                    label.setVisible(true);
+                    flashTimer[0].stop();
+                }
+
+            }
+        });
+    
+        flashTimer[0].start();
+ 
+    }
 
 
     // Method that creates a countdown timer based on a passed in # of seconds
