@@ -23,6 +23,6 @@ Sprint 4 🆕
 3. Manually load the driver with the program, this is done with the following commands:
     1. javac LasaerTag.java Player.java
     2. java -cp "PATH TO YOUR FOLDER\postgres-42.5.4.jar;PATH TO YOUR FOLDER" LaserTag
-3. Enter a player ID into the ID textbox and the given code name, once filled out press start game or hit f5 for the program to insert its values in the  database.
-4. NOTE: if you want a fresh experience the database reset button must be hit in heroku.
-5. Wait for the start up countdown and Boom. Gaming time.
+3. Enter a player ID into the ID textbox and the given code name, and be sure to press the enter key for EACH player. Once filled out press start game or hit f5 for the program to insert its values in the  database.
+5. NOTE: if you want a fresh experience the database reset button must be hit in heroku.
+6. After the GUI switches to the play action, run the given traffic generator. Be sure you are in the correct directory, and enter the command "python3 trafficgenerator.py". You will then see the events shown on the screen as the scores are updated.
